@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ejercicio: conflicto de merge · ABM de Alumnos</title>
+<style>
+  :root {
+    --azul: #2f6feb; --azul-osc: #1c4fb8; --azul-claro: #eaf1ff;
+    --verde: #1e9e5a; --verde-claro: #e6f6ee;
+    --naranja: #e08a1e; --naranja-claro: #fdf1de;
+    --violeta: #7c4fd6; --violeta-claro: #f2ecfc;
+    --rojo: #d64545; --rojo-claro: #fbeaea;
+    --gris: #667085; --gris-claro: #f1f2f5;
+    --texto: #1f2430; --borde: #e2e5ea; --fondo: #f7f8fa; --tarjeta: #ffffff;
+    --oscuro: #1b1f27;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+    color: var(--texto); background: var(--fondo); line-height: 1.55;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 1.5rem; }
+
+  nav.topnav { position: sticky; top: 0; z-index: 10; background: var(--tarjeta); border-bottom: 1px solid var(--borde); }
+  .topnav .wrap { display: flex; align-items: center; justify-content: space-between; padding: 0.9rem 1.5rem; gap: 1rem; flex-wrap: wrap; }
+  .topnav .brand { font-weight: 700; color: var(--texto); }
+  .topnav .brand span { color: var(--rojo); }
+  .topnav .links { display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.88rem; }
+  .topnav .links a { color: var(--gris); text-decoration: none; }
+  .topnav .links a:hover { color: var(--azul); }
+
+  header.hero { padding: 3.5rem 0 2.5rem; text-align: center; }
+  header.hero .kicker {
+    display: inline-block; background: var(--rojo-claro); color: var(--rojo);
+    padding: 0.3rem 0.8rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600;
+    letter-spacing: 0.02em; margin-bottom: 1rem;
+  }
+  header.hero h1 { font-size: 2rem; margin: 0 0 0.6rem; }
+  header.hero p { color: var(--gris); max-width: 660px; margin: 0 auto; }
+
+  section { padding: 2.5rem 0; border-top: 1px solid var(--borde); }
+  section:first-of-type { border-top: none; }
+  .eyebrow { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--azul); margin: 0 0 0.4rem; }
+  h2.title { font-size: 1.4rem; margin: 0 0 0.5rem; }
+  .lead { color: var(--gris); max-width: 700px; margin: 0 0 1.5rem; }
+
+  .goal-box {
+    display: flex; gap: 1rem; background: var(--tarjeta); border: 1px solid var(--borde);
+    border-left: 4px solid var(--verde); border-radius: 10px; padding: 1.1rem 1.3rem;
+  }
+  .goal-box .num { font-size: 1.6rem; font-weight: 800; color: var(--verde); line-height: 1; }
+  .goal-box p { margin: 0; color: var(--gris); font-size: 0.92rem; }
+  .goal-box strong { color: var(--texto); }
+
+  .cmd-table { border: 1px solid var(--borde); border-radius: 10px; background: var(--tarjeta); overflow: hidden; margin: 1rem 0; }
+  .cmd-row { display: flex; align-items: center; gap: 1rem; padding: 0.6rem 1rem; border-top: 1px solid var(--borde); flex-wrap: wrap; }
+  .cmd-row:first-child { border-top: none; }
+  .cmd-row code { font-family: "Consolas","SF Mono",monospace; background: var(--oscuro); color: #d9e2ff; padding: 0.3rem 0.55rem; border-radius: 6px; font-size: 0.8rem; }
+  .cmd-row .desc { color: var(--gris); font-size: 0.85rem; flex: 1; }
+
+  .badge {
+    display: inline-block; font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.6rem;
+    border-radius: 999px; white-space: nowrap;
+  }
+  .badge.backend { background: var(--azul-claro); color: var(--azul-osc); }
+  .badge.frontend { background: var(--violeta-claro); color: var(--violeta); }
+  .badge.ambos { background: var(--gris-claro); color: var(--gris); }
+  .badge.conflicto { background: var(--rojo-claro); color: var(--rojo); }
+
+  .timeline { position: relative; margin: 1.5rem 0 0; padding-left: 2.2rem; }
+  .timeline::before { content: ""; position: absolute; left: 0.85rem; top: 0.4rem; bottom: 0.4rem; width: 2px; background: var(--borde); }
+  .tl-step { position: relative; margin-bottom: 1.6rem; }
+  .tl-step:last-child { margin-bottom: 0; }
+  .tl-step .num {
+    position: absolute; left: -2.2rem; top: 0; width: 1.7rem; height: 1.7rem; border-radius: 50%;
+    background: var(--azul); color: #fff; display: flex; align-items: center; justify-content: center;
+    font-size: 0.82rem; font-weight: 700;
+  }
+  .tl-step.conflicto .num { background: var(--rojo); }
+  .tl-step .head { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem; flex-wrap: wrap; }
+  .tl-step h4 { margin: 0; font-size: 0.95rem; }
+  .tl-step p { margin: 0 0 0.4rem; color: var(--gris); font-size: 0.87rem; }
+  .tl-step code {
+    display: inline-block; font-family: "Consolas","SF Mono",monospace; background: var(--oscuro);
+    color: #d9e2ff; padding: 0.3rem 0.55rem; border-radius: 6px; font-size: 0.8rem; white-space: pre;
+  }
+  .tl-step pre {
+    margin: 0.3rem 0 0; font-family: "Consolas","SF Mono",monospace; background: var(--oscuro);
+    color: #d9e2ff; padding: 0.6rem 0.75rem; border-radius: 6px; font-size: 0.8rem; overflow-x: auto;
+  }
+
+  .conflict-block {
+    font-family: "Consolas","SF Mono",monospace; font-size: 0.85rem; background: var(--oscuro);
+    color: #e8ebf5; border-radius: 10px; padding: 1rem 1.2rem; margin: 1.25rem 0; overflow-x: auto;
+    line-height: 1.7;
+  }
+  .conflict-block .m1 { color: #ff8383; }
+  .conflict-block .m2 { color: #ffd479; }
+  .conflict-block .ours { color: #8fd0ff; }
+  .conflict-block .theirs { color: #b7f5c8; }
+
+  .tip { border-radius: 10px; padding: 1rem 1.15rem; margin: 1.25rem 0; border-left: 4px solid var(--azul); background: var(--azul-claro); font-size: 0.9rem; }
+  .tip.warn { border-left-color: var(--naranja); background: var(--naranja-claro); }
+  .tip.danger { border-left-color: var(--rojo); background: var(--rojo-claro); }
+  .tip strong { display: block; margin-bottom: 0.2rem; }
+
+  .checklist { list-style: none; padding: 0; margin: 1.25rem 0 0; }
+  .checklist li { display: flex; gap: 0.7rem; align-items: flex-start; padding: 0.6rem 0; border-top: 1px solid var(--borde); }
+  .checklist li:first-child { border-top: none; }
+  .checklist .box { flex: 0 0 auto; width: 1.15rem; height: 1.15rem; border: 2px solid var(--azul); border-radius: 4px; margin-top: 0.15rem; }
+  .checklist .txt strong { display: block; font-size: 0.92rem; }
+  .checklist .txt span { color: var(--gris); font-size: 0.85rem; }
+
+  footer { text-align: center; color: var(--gris); font-size: 0.85rem; padding: 2.5rem 0 3rem; }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="wrap">
+    <div class="brand">IES9007 <span>· Ejercicio: conflicto de merge</span></div>
+    <div class="links">
+      <a href="#objetivo">Objetivo</a>
+      <a href="#preparacion">Preparación</a>
+      <a href="#paso-a-paso">Paso a paso</a>
+      <a href="#resolver">Resolver</a>
+      <a href="#verificar">Verificar y limpiar</a>
+      <a href="#checklist">Checklist</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="kicker">Ejercicio guiado · práctica en pareja</span>
+    <h1>Provocar y resolver un conflicto de merge, a propósito</h1>
+    <p>Los dos van a editar <strong>la misma línea del mismo archivo</strong> sin
+       avisarse, para que Git no pueda decidir solo qué versión es la correcta.
+       Después lo van a resolver a mano. Es la mejor forma de perderle el miedo a
+       la palabra "conflict".</p>
+  </div>
+</header>
+
+<section id="objetivo">
+  <div class="wrap">
+    <p class="eyebrow">Antes de empezar</p>
+    <h2 class="title">Objetivo del ejercicio</h2>
+    <div class="goal-box">
+      <div class="num">✓</div>
+      <p>Que cada uno viva, con sus propias manos, el ciclo completo:
+         <strong>divergencia → conflicto → resolución → merge limpio</strong>.
+         No importa el contenido que se pierda o se pise: el archivo que van a usar
+         (<code>README.md</code>) es de bajo riesgo, pensado para esto.</p>
+    </div>
+  </div>
+</section>
+
+<section id="preparacion">
+  <div class="wrap">
+    <p class="eyebrow">Requisitos</p>
+    <h2 class="title">Preparación</h2>
+    <p class="lead">Los dos programadores, cada uno en su propia máquina y con su
+       propio clon del repositorio:</p>
+    <div class="cmd-table">
+      <div class="cmd-row"><code>git checkout main</code><span class="desc">Pararse en la rama principal</span></div>
+      <div class="cmd-row"><code>git pull</code><span class="desc">Traer la última versión antes de arrancar</span></div>
+    </div>
+    <p class="lead">Confirmá que en tu <code>README.md</code>, cerca del principio,
+       está esta línea (es el "blanco" del ejercicio):</p>
+    <div class="conflict-block">**Última actualización a cargo de:** _(completar)_</div>
+  </div>
+</section>
+
+<section id="paso-a-paso">
+  <div class="wrap">
+    <p class="eyebrow">Manos a la obra</p>
+    <h2 class="title">Paso a paso</h2>
+    <p class="lead">Sigan el orden. Lo importante es que <strong>frontend cree su
+       rama antes de que backend mergee la suya</strong> — así los dos parten del
+       mismo README viejo y el conflicto queda garantizado.</p>
+
+    <div class="timeline">
+      <div class="tl-step">
+        <div class="head"><span class="num">1</span><h4>Backend crea su rama</h4><span class="badge backend">Backend</span></div>
+        <p>Desde <code>main</code> actualizado:</p>
+        <pre>git checkout -b backend-actualizar-estado</pre>
+      </div>
+
+      <div class="tl-step">
+        <div class="head"><span class="num">2</span><h4>Frontend crea su rama</h4><span class="badge frontend">Frontend</span></div>
+        <p>También desde <code>main</code>, <strong>sin esperar a que backend termine</strong>:</p>
+        <pre>git checkout main
+git checkout -b frontend-actualizar-estado</pre>
+      </div>
+
+      <div class="tl-step">
+        <div class="head"><span class="num">3</span><h4>Backend edita la línea</h4><span class="badge backend">Backend</span></div>
+        <p>En <code>README.md</code>, reemplazar <code>_(completar)_</code> por:</p>
+        <pre>**Última actualización a cargo de:** Backend</pre>
+        <p>Guardar y confirmar el cambio:</p>
+        <pre>git add README.md
+git commit -m "Actualizo estado del README"</pre>
+      </div>
+
+      <div class="tl-step">
+        <div class="head"><span class="num">4</span><h4>Frontend edita la misma línea</h4><span class="badge frontend">Frontend</span></div>
+        <p>En su propia copia (todavía no vio el cambio de backend), reemplazar
+           <code>_(completar)_</code> por:</p>
+        <pre>**Última actualización a cargo de:** Frontend</pre>
+        <pre>git add README.md
+git commit -m "Actualizo estado del README"</pre>
+      </div>
+
+      <div class="tl-step">
+        <div class="head"><span class="num">5</span><h4>Backend sube y mergea primero</h4><span class="badge backend">Backend</span></div>
+        <pre>git push -u origin backend-actualizar-estado</pre>
+        <p>Abrir Pull Request en GitHub → mergearlo a <code>main</code>. Ahora
+           <code>main</code> ya tiene la versión de backend.</p>
+      </div>
+
+      <div class="tl-step">
+        <div class="head"><span class="num">6</span><h4>Frontend sube su rama</h4><span class="badge frontend">Frontend</span></div>
+        <pre>git push -u origin frontend-actualizar-estado</pre>
+        <p>Todavía no hay conflicto: el conflicto aparece recién cuando frontend
+           intenta juntar su rama con el <code>main</code> ya actualizado.</p>
+      </div>
+
+      <div class="tl-step conflicto">
+        <div class="head"><span class="num">!</span><h4>Frontend trae main y aparece el conflicto</h4><span class="badge conflicto">Acá pasa</span></div>
+        <pre>git checkout main
+git pull
+git checkout frontend-actualizar-estado
+git merge main</pre>
+        <p>Git responde algo como:</p>
+        <pre>Auto-merging README.md
+CONFLICT (content): Merge conflict in README.md
+Automatic merge failed; fix conflicts and then commit the result.</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="resolver">
+  <div class="wrap">
+    <p class="eyebrow">El momento clave</p>
+    <h2 class="title">Resolver el conflicto</h2>
+    <p class="lead">Al abrir <code>README.md</code>, en vez de la línea de siempre
+       vas a encontrar esto:</p>
+
+    <div class="conflict-block"><span class="m1">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</span>
+<span class="ours">**Última actualización a cargo de:** Frontend</span>
+<span class="m2">=======</span>
+<span class="theirs">**Última actualización a cargo de:** Backend</span>
+<span class="m1">&gt;&gt;&gt;&gt;&gt;&gt;&gt; main</span></div>
+
+    <p class="lead">Lo de arriba (<span style="color:var(--azul);font-weight:600;">HEAD</span>)
+       es la versión de la rama en la que estás parado; lo de abajo
+       (<span style="color:var(--naranja);font-weight:600;">main</span>) es la que
+       viene de afuera. Hay que decidir qué queda y borrar las tres marcas.</p>
+
+    <div class="timeline">
+      <div class="tl-step">
+        <div class="head"><span class="num">8</span><h4>Editar a mano el resultado final</h4><span class="badge ambos">Frontend</span></div>
+        <p>Por ejemplo, dejando registro de los dos en vez de pisarse:</p>
+        <pre>**Última actualización a cargo de:** Backend y Frontend</pre>
+        <p>Borrar por completo las líneas <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code>,
+           <code>=======</code> y <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt; main</code>. Solo
+           debe quedar el texto final, sin marcas.</p>
+      </div>
+      <div class="tl-step">
+        <div class="head"><span class="num">9</span><h4>Marcar como resuelto y cerrar el merge</h4><span class="badge frontend">Frontend</span></div>
+        <pre>git add README.md
+git commit</pre>
+        <p>Git ya trae un mensaje de merge sugerido; se puede dejar tal cual o
+           editarlo, y guardar.</p>
+      </div>
+      <div class="tl-step">
+        <div class="head"><span class="num">10</span><h4>Subir la rama resuelta</h4><span class="badge frontend">Frontend</span></div>
+        <pre>git push</pre>
+        <p>Abrir el Pull Request de <code>frontend-actualizar-estado</code> hacia
+           <code>main</code> y mergearlo: ya no debería mostrar conflictos, porque
+           se resolvió en tu máquina en el paso anterior.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="verificar">
+  <div class="wrap">
+    <p class="eyebrow">Cierre</p>
+    <h2 class="title">Verificar y limpiar</h2>
+    <div class="cmd-table">
+      <div class="cmd-row"><code>git checkout main</code><span class="desc">Ambos vuelven a la rama principal</span></div>
+      <div class="cmd-row"><code>git pull</code><span class="desc">Traen la versión final ya mergeada</span></div>
+      <div class="cmd-row"><code>git log --oneline --graph</code><span class="desc">Ver cómo quedó el historial con las dos ramas y el merge</span></div>
+      <div class="cmd-row"><code>git branch -d backend-actualizar-estado</code><span class="desc">Borrar la rama local ya usada</span></div>
+      <div class="cmd-row"><code>git push origin --delete backend-actualizar-estado</code><span class="desc">Borrar también la rama remota (ídem con la de frontend)</span></div>
+    </div>
+
+    <div class="tip warn">
+      <strong>Por qué pasó esto</strong>
+      Los dos partieron del mismo <code>main</code> viejo y modificaron la misma
+      línea sin coordinarse. En un proyecto real esto se evita comunicándose antes
+      de tocar un archivo compartido, o haciendo <code>git pull</code> más seguido.
+      El conflicto no es un error grave: es Git protegiendo el trabajo de los dos.
+    </div>
+  </div>
+</section>
+
+<section id="checklist">
+  <div class="wrap">
+    <p class="eyebrow">Antes de dar el ejercicio por terminado</p>
+    <h2 class="title">Checklist</h2>
+    <ul class="checklist">
+      <li><div class="box"></div><div class="txt"><strong>Vi aparecer el mensaje "CONFLICT" en la terminal</strong><span>No lo evité ni lo cancelé con <code>git merge --abort</code></span></div></li>
+      <li><div class="box"></div><div class="txt"><strong>Identifiqué las tres marcas dentro del archivo</strong><span><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code>, <code>=======</code>, <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt; main</code></span></div></li>
+      <li><div class="box"></div><div class="txt"><strong>Edité el contenido final a mano y borré las marcas</strong><span>El archivo quedó sin ningún rastro de <code>&lt;&lt;&lt;</code> o <code>&gt;&gt;&gt;</code></span></div></li>
+      <li><div class="box"></div><div class="txt"><strong>Cerré el merge con <code>git add</code> + <code>git commit</code></strong><span>Y subí la rama con <code>git push</code></span></div></li>
+      <li><div class="box"></div><div class="txt"><strong>Confirmé en GitHub que el Pull Request mergeó sin conflictos</strong><span>Porque ya lo habíamos resuelto en la máquina</span></div></li>
+      <li><div class="box"></div><div class="txt"><strong>Borré las ramas de prueba</strong><span>Local y remota, para no dejar basura en el repositorio</span></div></li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Ejercicio guiado: conflicto de merge · Proyecto ABM de Alumnos · IES9007
+  </div>
+</footer>
+
+</body>
+</html>
