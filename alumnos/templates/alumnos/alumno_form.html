@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if object %}Editar alumno{% else %}Nuevo alumno{% endif %}{% endblock %}
+
+{% block content %}
+<h1>{% if object %}Editar alumno{% else %}Nuevo alumno{% endif %}</h1>
+
+<form method="post" class="form" novalidate>
+    {% csrf_token %}
+    {% for field in form %}
+        <div class="form-field">
+            {{ field.label_tag }}
+            {{ field }}
+            {% if field.errors %}
+                <ul class="errors">
+                    {% for error in field.errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    {% endfor %}
+
+    <div class="form-actions">
+        <button type="submit" class="btn">Guardar</button>
+        <a href="{% url 'alumnos:lista' %}" class="btn btn-secondary">Cancelar</a>
+    </div>
+</form>
+{% endblock %}

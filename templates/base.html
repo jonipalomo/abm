@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Gestión de Alumnos{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="{% url 'home' %}" class="logo">IES9007 · Gestión de Alumnos</a>
+            <nav>
+                <a href="{% url 'home' %}">Inicio</a>
+                <a href="{% url 'alumnos:lista' %}">Alumnos</a>
+                <a href="{% url 'admin:index' %}">Admin</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="message {{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>Proyecto educativo &middot; IES9007 &middot; ABM de Alumnos con Django</p>
+        </div>
+    </footer>
+</body>
+</html>

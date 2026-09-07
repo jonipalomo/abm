@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio · Gestión de Alumnos{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1>Sistema de Gestión de Alumnos</h1>
+    <p>Proyecto de práctica en Django para aprender a trabajar en equipo: un desarrollador de
+       backend y uno de frontend colaborando sobre el mismo repositorio.</p>
+    <a class="btn" href="{% url 'alumnos:lista' %}">Ver listado de alumnos</a>
+</section>
+
+<section class="features">
+    <div class="card">
+        <h2>Alta</h2>
+        <p>Carga de nuevos alumnos con nombre, DNI, curso y datos de contacto.</p>
+    </div>
+    <div class="card">
+        <h2>Baja</h2>
+        <p>Eliminación de registros con confirmación previa.</p>
+    </div>
+    <div class="card">
+        <h2>Modificación</h2>
+        <p>Edición de los datos de un alumno ya existente.</p>
+    </div>
+</section>
+{% endblock %}
