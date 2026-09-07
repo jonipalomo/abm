@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía de Git y GitHub · ABM de Alumnos</title>
+<style>
+  :root {
+    --azul: #2f6feb;
+    --azul-osc: #1c4fb8;
+    --azul-claro: #eaf1ff;
+    --verde: #1e9e5a;
+    --verde-claro: #e6f6ee;
+    --naranja: #e08a1e;
+    --naranja-claro: #fdf1de;
+    --violeta: #7c4fd6;
+    --violeta-claro: #f2ecfc;
+    --rojo: #d64545;
+    --rojo-claro: #fbeaea;
+    --gris: #667085;
+    --gris-claro: #f1f2f5;
+    --texto: #1f2430;
+    --borde: #e2e5ea;
+    --fondo: #f7f8fa;
+    --tarjeta: #ffffff;
+    --oscuro: #1b1f27;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+    color: var(--texto);
+    background: var(--fondo);
+    line-height: 1.55;
+  }
+
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 1.5rem; }
+
+  /* ---------- NAV ---------- */
+  nav.topnav {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--tarjeta);
+    border-bottom: 1px solid var(--borde);
+  }
+  .topnav .wrap {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.9rem 1.5rem; gap: 1rem; flex-wrap: wrap;
+  }
+  .topnav .brand { font-weight: 700; color: var(--texto); }
+  .topnav .brand span { color: var(--azul); }
+  .topnav .links { display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.9rem; }
+  .topnav .links a { color: var(--gris); text-decoration: none; }
+  .topnav .links a:hover { color: var(--azul); }
+
+  /* ---------- HERO ---------- */
+  header.hero { padding: 3.5rem 0 2.5rem; text-align: center; }
+  header.hero .kicker {
+    display: inline-block; background: var(--azul-claro); color: var(--azul-osc);
+    padding: 0.3rem 0.8rem; border-radius: 999px;
+    font-size: 0.8rem; font-weight: 600; letter-spacing: 0.02em; margin-bottom: 1rem;
+  }
+  header.hero h1 { font-size: 2.1rem; margin: 0 0 0.6rem; }
+  header.hero p { color: var(--gris); max-width: 640px; margin: 0 auto; }
+
+  /* ---------- SECTIONS ---------- */
+  section { padding: 2.75rem 0; border-top: 1px solid var(--borde); }
+  section:first-of-type { border-top: none; }
+  .eyebrow {
+    font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--azul); margin: 0 0 0.4rem;
+  }
+  h2.title { font-size: 1.5rem; margin: 0 0 0.5rem; }
+  .lead { color: var(--gris); max-width: 680px; margin: 0 0 1.75rem; }
+
+  /* ---------- FLOW (git areas) ---------- */
+  .flow { display: flex; align-items: stretch; gap: 0; flex-wrap: wrap; justify-content: center; margin: 1.5rem 0; }
+  .flow-box {
+    background: var(--tarjeta); border: 2px solid var(--borde); border-radius: 10px;
+    padding: 1rem 1.1rem; width: 165px; text-align: center;
+  }
+  .flow-box strong { display: block; font-size: 0.95rem; margin-bottom: 0.25rem; }
+  .flow-box span { font-size: 0.78rem; color: var(--gris); }
+  .flow-box code { display:block; margin-top:0.4rem; font-size: 0.72rem; background: var(--gris-claro); border-radius: 4px; padding: 0.15rem 0.3rem; }
+  .flow-box.a { border-color: var(--gris); }
+  .flow-box.b { border-color: var(--naranja); }
+  .flow-box.c { border-color: var(--azul); }
+  .flow-box.d { border-color: var(--verde); }
+  .flow-arrow { display: flex; align-items: center; justify-content: center; width: 44px; font-size: 1.3rem; color: var(--gris); }
+  .flow-arrow.down { display: none; }
+  @media (max-width: 800px) {
+    .flow { flex-direction: column; align-items: center; }
+    .flow-box { width: 230px; }
+    .flow-arrow.right { display: none; }
+    .flow-arrow.down { display: flex; }
+  }
+
+  /* ---------- COMMAND TABLE ---------- */
+  .cmd-group { margin-bottom: 1.5rem; }
+  .cmd-group h3 {
+    font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--gris); margin: 0 0 0.6rem;
+  }
+  .cmd-table { border: 1px solid var(--borde); border-radius: 10px; background: var(--tarjeta); overflow: hidden; }
+  .cmd-row {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 0.65rem 1rem; border-top: 1px solid var(--borde); flex-wrap: wrap;
+  }
+  .cmd-row:first-child { border-top: none; }
+  .cmd-row code {
+    font-family: "Consolas", "SF Mono", monospace; background: var(--oscuro); color: #d9e2ff;
+    padding: 0.3rem 0.6rem; border-radius: 6px; font-size: 0.82rem; min-width: 280px;
+  }
+  .cmd-row .desc { color: var(--gris); font-size: 0.88rem; flex: 1; }
+
+  /* ---------- ROLE SPLIT ---------- */
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin: 1.5rem 0; }
+  @media (max-width: 760px) { .split { grid-template-columns: 1fr; } }
+  .role-col { border-radius: 12px; overflow: hidden; border: 1px solid var(--borde); background: var(--tarjeta); }
+  .role-head { padding: 0.9rem 1.1rem; color: #fff; font-weight: 700; }
+  .role-col.backend .role-head { background: var(--azul); }
+  .role-col.frontend .role-head { background: var(--violeta); }
+  .role-steps { padding: 1rem 1.1rem; }
+  .role-steps .step { margin-bottom: 0.85rem; }
+  .role-steps .step:last-child { margin-bottom: 0; }
+  .role-steps .step p { margin: 0 0 0.3rem; font-size: 0.82rem; color: var(--gris); }
+  .role-steps .step code {
+    display: block; font-family: "Consolas", "SF Mono", monospace;
+    background: var(--oscuro); color: #d9e2ff; padding: 0.4rem 0.6rem;
+    border-radius: 6px; font-size: 0.8rem; overflow-x: auto;
+  }
+
+  /* ---------- TIMELINE ---------- */
+  .timeline { position: relative; margin: 1.5rem 0 0; padding-left: 2.2rem; }
+  .timeline::before {
+    content: ""; position: absolute; left: 0.85rem; top: 0.4rem; bottom: 0.4rem;
+    width: 2px; background: var(--borde);
+  }
+  .tl-step { position: relative; margin-bottom: 1.4rem; }
+  .tl-step:last-child { margin-bottom: 0; }
+  .tl-step .num {
+    position: absolute; left: -2.2rem; top: 0; width: 1.7rem; height: 1.7rem;
+    border-radius: 50%; background: var(--azul); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.82rem; font-weight: 700;
+  }
+  .tl-step h4 { margin: 0 0 0.3rem; font-size: 0.95rem; }
+  .tl-step p { margin: 0 0 0.35rem; color: var(--gris); font-size: 0.87rem; }
+  .tl-step code {
+    display: inline-block; font-family: "Consolas", "SF Mono", monospace;
+    background: var(--oscuro); color: #d9e2ff; padding: 0.3rem 0.55rem;
+    border-radius: 6px; font-size: 0.8rem;
+  }
+
+  /* ---------- ALERT / TIP BOXES ---------- */
+  .tip {
+    border-radius: 10px; padding: 1rem 1.15rem; margin: 1rem 0;
+    border-left: 4px solid var(--azul); background: var(--azul-claro);
+    font-size: 0.9rem;
+  }
+  .tip.warn { border-left-color: var(--naranja); background: var(--naranja-claro); }
+  .tip.danger { border-left-color: var(--rojo); background: var(--rojo-claro); }
+  .tip strong { display: block; margin-bottom: 0.2rem; }
+
+  footer { text-align: center; color: var(--gris); font-size: 0.85rem; padding: 2.5rem 0 3rem; }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="wrap">
+    <div class="brand">IES9007 <span>· Git &amp; GitHub</span></div>
+    <div class="links">
+      <a href="#areas">Cómo viaja el código</a>
+      <a href="#inicial">Config. inicial</a>
+      <a href="#esenciales">Comandos esenciales</a>
+      <a href="#paralelo">Trabajo en paralelo</a>
+      <a href="#ejemplo">Ejemplo completo</a>
+      <a href="#conflictos">Conflictos</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="kicker">ABM de Alumnos · Repositorio en GitHub</span>
+    <h1>Cómo comparten el código los dos programadores</h1>
+    <p>Guía práctica de los comandos de Git y GitHub que backend y frontend usan
+       todos los días para trabajar sobre el mismo repositorio sin pisarse el
+       código.</p>
+  </div>
+</header>
+
+<section id="areas">
+  <div class="wrap">
+    <p class="eyebrow">Concepto</p>
+    <h2 class="title">Las cuatro paradas del código fuente</h2>
+    <p class="lead">Antes de los comandos, conviene tener claro por dónde pasa un
+       cambio hasta llegar al repositorio de GitHub que comparten los dos:</p>
+
+    <div class="flow">
+      <div class="flow-box a">
+        <strong>Directorio de trabajo</strong>
+        <span>los archivos que editás en tu editor</span>
+        <code>git status</code>
+      </div>
+      <div class="flow-arrow right">→</div>
+      <div class="flow-arrow down">↓</div>
+      <div class="flow-box b">
+        <strong>Área de preparación</strong>
+        <span>lo que marcaste para el próximo commit</span>
+        <code>git add</code>
+      </div>
+      <div class="flow-arrow right">→</div>
+      <div class="flow-arrow down">↓</div>
+      <div class="flow-box c">
+        <strong>Repositorio local</strong>
+        <span>historial guardado en tu máquina</span>
+        <code>git commit</code>
+      </div>
+      <div class="flow-arrow right">→</div>
+      <div class="flow-arrow down">↓</div>
+      <div class="flow-box d">
+        <strong>GitHub (remoto)</strong>
+        <span>donde lo ve tu compañero</span>
+        <code>git push</code>
+      </div>
+    </div>
+
+    <p class="lead" style="margin-top:1rem;">Para traer lo que subió el compañero
+       pasa lo mismo, pero al revés: <code style="font-family:'Consolas','SF Mono',monospace;background:var(--gris-claro);padding:0.1rem 0.4rem;border-radius:4px;">git pull</code>
+       baja los cambios de GitHub directo a tu directorio de trabajo.</p>
+  </div>
+</section>
+
+<section id="inicial">
+  <div class="wrap">
+    <p class="eyebrow">Paso previo</p>
+    <h2 class="title">Configuración inicial (una sola vez por máquina)</h2>
+    <p class="lead">Cada programador la corre una vez al empezar a trabajar en una
+       computadora nueva:</p>
+
+    <div class="cmd-table">
+      <div class="cmd-row">
+        <code>git config --global user.name "Tu Nombre"</code>
+        <span class="desc">Identifica quién hizo cada commit</span>
+      </div>
+      <div class="cmd-row">
+        <code>git config --global user.email "tu@email.com"</code>
+        <span class="desc">Debe coincidir con el email de tu cuenta de GitHub</span>
+      </div>
+      <div class="cmd-row">
+        <code>git clone https://github.com/jonipalomo/abm.git</code>
+        <span class="desc">Trae una copia completa del repositorio (una sola vez)</span>
+      </div>
+    </div>
+
+    <div class="tip">
+      <strong>Después del clone</strong>
+      Instalar dependencias y preparar la base antes de programar:
+      <code style="display:block;margin-top:0.5rem;font-family:'Consolas','SF Mono',monospace;background:var(--oscuro);color:#d9e2ff;padding:0.4rem 0.6rem;border-radius:6px;">pip install -r requirements.txt &amp;&amp; python manage.py migrate</code>
+    </div>
+  </div>
+</section>
+
+<section id="esenciales">
+  <div class="wrap">
+    <p class="eyebrow">Referencia</p>
+    <h2 class="title">Comandos esenciales del día a día</h2>
+    <p class="lead">Los que se usan constantemente, agrupados por lo que hacen:</p>
+
+    <div class="cmd-group">
+      <h3>Ver el estado de tus cambios</h3>
+      <div class="cmd-table">
+        <div class="cmd-row">
+          <code>git status</code>
+          <span class="desc">Qué archivos cambiaste, cuáles están preparados para commit</span>
+        </div>
+        <div class="cmd-row">
+          <code>git diff</code>
+          <span class="desc">Qué líneas exactas cambiaron, línea por línea</span>
+        </div>
+        <div class="cmd-row">
+          <code>git log --oneline</code>
+          <span class="desc">Historial de commits, uno por línea</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cmd-group">
+      <h3>Guardar cambios</h3>
+      <div class="cmd-table">
+        <div class="cmd-row">
+          <code>git add nombre-archivo.py</code>
+          <span class="desc">Prepara un archivo puntual para el commit</span>
+        </div>
+        <div class="cmd-row">
+          <code>git add .</code>
+          <span class="desc">Prepara todos los archivos modificados (usar con cuidado)</span>
+        </div>
+        <div class="cmd-row">
+          <code>git commit -m "mensaje claro"</code>
+          <span class="desc">Guarda los cambios preparados en el historial local</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cmd-group">
+      <h3>Ramas</h3>
+      <div class="cmd-table">
+        <div class="cmd-row">
+          <code>git branch</code>
+          <span class="desc">Lista las ramas locales</span>
+        </div>
+        <div class="cmd-row">
+          <code>git checkout -b nombre-rama</code>
+          <span class="desc">Crea una rama nueva y te parás en ella</span>
+        </div>
+        <div class="cmd-row">
+          <code>git checkout main</code>
+          <span class="desc">Volver a la rama principal</span>
+        </div>
+        <div class="cmd-row">
+          <code>git merge nombre-rama</code>
+          <span class="desc">Integra los cambios de una rama en la actual</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cmd-group">
+      <h3>Sincronizar con GitHub</h3>
+      <div class="cmd-table">
+        <div class="cmd-row">
+          <code>git pull</code>
+          <span class="desc">Trae y aplica los cambios que subió tu compañero</span>
+        </div>
+        <div class="cmd-row">
+          <code>git push</code>
+          <span class="desc">Sube tus commits al repositorio remoto</span>
+        </div>
+        <div class="cmd-row">
+          <code>git push -u origin nombre-rama</code>
+          <span class="desc">Sube una rama nueva por primera vez y la vincula</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="paralelo">
+  <div class="wrap">
+    <p class="eyebrow">Trabajo en equipo</p>
+    <h2 class="title">Backend y frontend trabajando al mismo tiempo</h2>
+    <p class="lead">Cada uno arranca su propia rama desde <code style="font-family:'Consolas','SF Mono',monospace;background:var(--gris-claro);padding:0.1rem 0.4rem;border-radius:4px;">main</code>,
+       así ninguno bloquea al otro:</p>
+
+    <div class="split">
+      <div class="role-col backend">
+        <div class="role-head">Programador Backend</div>
+        <div class="role-steps">
+          <div class="step">
+            <p>1. Actualizar main y crear rama</p>
+            <code>git checkout main
+git pull
+git checkout -b backend-validacion-dni</code>
+          </div>
+          <div class="step">
+            <p>2. Editar alumnos/models.py, forms.py, views.py</p>
+            <code>git add alumnos/
+git commit -m "Validar formato de DNI"</code>
+          </div>
+          <div class="step">
+            <p>3. Subir la rama y abrir Pull Request</p>
+            <code>git push -u origin backend-validacion-dni</code>
+          </div>
+        </div>
+      </div>
+
+      <div class="role-col frontend">
+        <div class="role-head">Programador Frontend</div>
+        <div class="role-steps">
+          <div class="step">
+            <p>1. Actualizar main y crear rama</p>
+            <code>git checkout main
+git pull
+git checkout -b frontend-landing</code>
+          </div>
+          <div class="step">
+            <p>2. Editar templates/home.html, style.css</p>
+            <code>git add templates/ static/
+git commit -m "Rediseñar landing page"</code>
+          </div>
+          <div class="step">
+            <p>3. Subir la rama y abrir Pull Request</p>
+            <code>git push -u origin frontend-landing</code>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tip warn">
+      <strong>Antes de empezar a programar cada día</strong>
+      Pararse en <code style="font-family:'Consolas','SF Mono',monospace;">main</code> y correr
+      <code style="font-family:'Consolas','SF Mono',monospace;">git pull</code> para no
+      trabajar sobre una versión vieja del código.
+    </div>
+  </div>
+</section>
+
+<section id="ejemplo">
+  <div class="wrap">
+    <p class="eyebrow">Paso a paso</p>
+    <h2 class="title">Ejemplo completo: subir un cambio y mergearlo</h2>
+
+    <div class="timeline">
+      <div class="tl-step">
+        <div class="num">1</div>
+        <h4>Crear la rama</h4>
+        <p><code>git checkout -b frontend-landing</code></p>
+      </div>
+      <div class="tl-step">
+        <div class="num">2</div>
+        <h4>Programar y revisar qué cambió</h4>
+        <p><code>git status</code> y <code>git diff</code> antes de guardar</p>
+      </div>
+      <div class="tl-step">
+        <div class="num">3</div>
+        <h4>Preparar y commitear</h4>
+        <p><code>git add .</code> luego <code>git commit -m "Rediseñar landing page"</code></p>
+      </div>
+      <div class="tl-step">
+        <div class="num">4</div>
+        <h4>Subir la rama a GitHub</h4>
+        <p><code>git push -u origin frontend-landing</code></p>
+      </div>
+      <div class="tl-step">
+        <div class="num">5</div>
+        <h4>Abrir un Pull Request en github.com</h4>
+        <p>Botón "Compare &amp; pull request" que aparece en el repositorio. Describir qué se hizo y por qué.</p>
+      </div>
+      <div class="tl-step">
+        <div class="num">6</div>
+        <h4>El compañero revisa y aprueba</h4>
+        <p>Lee el diff, comenta si algo no queda claro, aprueba el PR.</p>
+      </div>
+      <div class="tl-step">
+        <div class="num">7</div>
+        <h4>Merge a main (desde GitHub)</h4>
+        <p>Botón "Merge pull request". Después, borrar la rama ya integrada.</p>
+      </div>
+      <div class="tl-step">
+        <div class="num">8</div>
+        <h4>Ambos actualizan su copia local</h4>
+        <p><code>git checkout main</code> y <code>git pull</code></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="conflictos">
+  <div class="wrap">
+    <p class="eyebrow">Cuando pasa</p>
+    <h2 class="title">Resolver un conflicto de merge</h2>
+    <p class="lead">Pasa cuando los dos tocaron la misma línea del mismo archivo en
+       ramas distintas. Git no puede decidir solo cuál versión es la correcta, así
+       que lo marca y lo tenés que resolver a mano.</p>
+
+    <div class="cmd-table">
+      <div class="cmd-row">
+        <code>git pull</code>
+        <span class="desc">Si hay conflicto, Git avisa y marca los archivos afectados</span>
+      </div>
+      <div class="cmd-row">
+        <code>git status</code>
+        <span class="desc">Lista los archivos con conflicto sin resolver</span>
+      </div>
+      <div class="cmd-row">
+        <code>git add archivo-resuelto.py</code>
+        <span class="desc">Marca el archivo como resuelto después de editarlo a mano</span>
+      </div>
+      <div class="cmd-row">
+        <code>git commit</code>
+        <span class="desc">Cierra el merge una vez resueltos todos los conflictos</span>
+      </div>
+    </div>
+
+    <div class="tip danger">
+      <strong>Dentro del archivo en conflicto</strong>
+      Git deja marcas <code style="font-family:'Consolas','SF Mono',monospace;">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code>,
+      <code style="font-family:'Consolas','SF Mono',monospace;">=======</code> y
+      <code style="font-family:'Consolas','SF Mono',monospace;">&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>
+      alrededor de las dos versiones. Hay que dejar el código final correcto y borrar
+      esas marcas antes de guardar.
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Guía de Git &amp; GitHub · Proyecto ABM de Alumnos · IES9007
+  </div>
+</footer>
+
+</body>
+</html>
