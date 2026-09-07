@@ -69,6 +69,27 @@ git --version
    - Listado de alumnos: http://127.0.0.1:8000/alumnos/
    - Admin: http://127.0.0.1:8000/admin/
 
+## Guías del proyecto
+
+Además de este README, en la raíz del proyecto hay tres guías visuales en HTML
+(se abren directo con doble clic, sin instalar nada):
+
+- `guia-conceptos.html` — patrón MVT, ABM/CRUD, cómo está modelada la entidad
+  `Alumno` y por dónde viaja una petición.
+- `guia-github.html` — comandos esenciales de Git y flujo de trabajo en
+  paralelo entre backend y frontend.
+- `ejercicio-conflicto.html` — ejercicio guiado para provocar y resolver un
+  conflicto de merge real entre los dos.
+
+Para leerlas desde otra PC o el celular (misma red Wi-Fi o cable):
+
+```bash
+python servir-guias-red.py
+```
+
+Imprime las URLs, tanto locales (`127.0.0.1`) como de red (la IP de esta PC).
+Se detiene con `Ctrl+C`.
+
 ## Comandos esenciales
 
 | Comando | Para qué sirve |
