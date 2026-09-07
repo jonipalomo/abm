@@ -54,6 +54,11 @@
   .topnav .links { display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.9rem; }
   .topnav .links a { color: var(--gris); text-decoration: none; }
   .topnav .links a:hover { color: var(--azul); }
+  .topnav .links a.volver { color: var(--azul); font-weight: 700; }
+
+  @media print {
+    nav.topnav { display: none; }
+  }
 
   /* ---------- HERO ---------- */
   header.hero { padding: 3.5rem 0 2.5rem; text-align: center; }
@@ -164,6 +169,20 @@
   .tip.danger { border-left-color: var(--rojo); background: var(--rojo-claro); }
   .tip strong { display: block; margin-bottom: 0.2rem; }
 
+  /* ---------- VIDEO EMBED ---------- */
+  .video-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-top: 1.5rem; }
+  @media (max-width: 760px) { .video-grid { grid-template-columns: 1fr; } }
+  .video-item h3 { font-size: 0.92rem; margin: 0 0 0.6rem; }
+  .video-wrap {
+    position: relative; width: 100%; height: 0; padding-bottom: 56.25%;
+    border-radius: 10px; overflow: hidden; border: 1px solid var(--borde);
+    background: #000;
+  }
+  .video-wrap iframe {
+    position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+  }
+  @media print { .video-grid { display: none; } }
+
   footer { text-align: center; color: var(--gris); font-size: 0.85rem; padding: 2.5rem 0 3rem; }
 </style>
 </head>
@@ -173,12 +192,14 @@
   <div class="wrap">
     <div class="brand">IES9007 <span>· Git &amp; GitHub</span></div>
     <div class="links">
+      <a href="index.html" class="volver">← Ruta de aprendizaje</a>
       <a href="#areas">Cómo viaja el código</a>
       <a href="#inicial">Config. inicial</a>
       <a href="#esenciales">Comandos esenciales</a>
       <a href="#paralelo">Trabajo en paralelo</a>
       <a href="#ejemplo">Ejemplo completo</a>
       <a href="#conflictos">Conflictos</a>
+      <a href="#videos">Videos</a>
     </div>
   </div>
 </nav>
@@ -497,11 +518,43 @@ git commit -m "Rediseñar landing page"</code>
   </div>
 </section>
 
+<section id="videos">
+  <div class="wrap">
+    <p class="eyebrow">Para reforzar</p>
+    <h2 class="title">Videos recomendados</h2>
+    <p class="lead">Dos videos que complementan esta guía: cómo trabajar en equipo
+       sobre GitHub de punta a punta, y cómo sumar colaboradores a un repositorio
+       compartido.</p>
+    <div class="video-grid">
+      <div class="video-item">
+        <h3>Usar GitHub para proyectos en equipo</h3>
+        <div class="video-wrap">
+          <iframe src="https://www.youtube.com/embed/BtyAfOcN6nY" title="Te enseño a usar GitHub para proyectos en Equipo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+        </div>
+      </div>
+      <div class="video-item">
+        <h3>Sumar colaboradores a un repositorio</h3>
+        <div class="video-wrap">
+          <iframe src="https://www.youtube.com/embed/g-coH1XtqrQ" title="Trabajar en equipo en Github.com - Colaboradores" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <footer>
   <div class="wrap">
     Guía de Git &amp; GitHub · Proyecto ABM de Alumnos · IES9007
   </div>
 </footer>
+
+<script>
+  if (new URLSearchParams(location.search).get("pdf") === "1") {
+    window.addEventListener("load", function () {
+      setTimeout(function () { window.print(); }, 300);
+    });
+  }
+</script>
 
 </body>
 </html>

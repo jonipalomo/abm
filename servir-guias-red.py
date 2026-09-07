@@ -18,6 +18,7 @@ import sys
 PUERTO_POR_DEFECTO = 8901
 
 GUIAS = [
+    "index.html",
     "guia-conceptos.html",
     "guia-github.html",
     "ejercicio-conflicto.html",

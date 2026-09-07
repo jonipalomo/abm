@@ -30,6 +30,11 @@
   .topnav .links { display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.88rem; }
   .topnav .links a { color: var(--gris); text-decoration: none; }
   .topnav .links a:hover { color: var(--azul); }
+  .topnav .links a.volver { color: var(--azul); font-weight: 700; }
+
+  @media print {
+    nav.topnav { display: none; }
+  }
 
   header.hero { padding: 3.5rem 0 2.5rem; text-align: center; }
   header.hero .kicker {
@@ -113,6 +118,18 @@
   .checklist .txt strong { display: block; font-size: 0.92rem; }
   .checklist .txt span { color: var(--gris); font-size: 0.85rem; }
 
+  /* ---------- VIDEO EMBED ---------- */
+  .video-wrap {
+    position: relative; width: 100%; max-width: 640px; height: 0;
+    padding-bottom: 36%; margin: 1.5rem 0 0;
+    border-radius: 10px; overflow: hidden; border: 1px solid var(--borde);
+    background: #000;
+  }
+  .video-wrap iframe {
+    position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+  }
+  @media print { .video-wrap { display: none; } }
+
   footer { text-align: center; color: var(--gris); font-size: 0.85rem; padding: 2.5rem 0 3rem; }
 </style>
 </head>
@@ -122,6 +139,7 @@
   <div class="wrap">
     <div class="brand">IES9007 <span>· Ejercicio: conflicto de merge</span></div>
     <div class="links">
+      <a href="index.html" class="volver">← Ruta de aprendizaje</a>
       <a href="#objetivo">Objetivo</a>
       <a href="#preparacion">Preparación</a>
       <a href="#paso-a-paso">Paso a paso</a>
@@ -153,6 +171,12 @@
          <strong>divergencia → conflicto → resolución → merge limpio</strong>.
          No importa el contenido que se pierda o se pise: el archivo que van a usar
          (<code>README.md</code>) es de bajo riesgo, pensado para esto.</p>
+    </div>
+
+    <p class="lead" style="margin-top:1.25rem;">Antes de arrancar, mirá cómo se ve
+       un merge con conflicto resuelto paso a paso:</p>
+    <div class="video-wrap">
+      <iframe src="https://www.youtube.com/embed/Kq3AbJayY6Y" title="Cómo Unir o hacer Merge de Ramas en Git" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
     </div>
   </div>
 </section>
@@ -329,6 +353,14 @@ git commit</pre>
     Ejercicio guiado: conflicto de merge · Proyecto ABM de Alumnos · IES9007
   </div>
 </footer>
+
+<script>
+  if (new URLSearchParams(location.search).get("pdf") === "1") {
+    window.addEventListener("load", function () {
+      setTimeout(function () { window.print(); }, 300);
+    });
+  }
+</script>
 
 </body>
 </html>

@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ruta de aprendizaje · ABM de Alumnos</title>
+<style>
+  :root {
+    --azul: #2f6feb;
+    --azul-osc: #1c4fb8;
+    --azul-claro: #eaf1ff;
+    --verde: #1e9e5a;
+    --verde-claro: #e6f6ee;
+    --naranja: #e08a1e;
+    --naranja-claro: #fdf1de;
+    --violeta: #7c4fd6;
+    --violeta-claro: #f2ecfc;
+    --rojo: #d64545;
+    --rojo-claro: #fbeaea;
+    --gris: #667085;
+    --gris-claro: #f1f2f5;
+    --texto: #1f2430;
+    --borde: #e2e5ea;
+    --fondo: #f7f8fa;
+    --tarjeta: #ffffff;
+    --oscuro: #1b1f27;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+    color: var(--texto);
+    background: var(--fondo);
+    line-height: 1.55;
+  }
+
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 1.5rem; }
+
+  /* ---------- NAV ---------- */
+  nav.topnav {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--tarjeta);
+    border-bottom: 1px solid var(--borde);
+  }
+  .topnav .wrap {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.9rem 1.5rem; gap: 1rem; flex-wrap: wrap;
+  }
+  .topnav .brand { font-weight: 700; color: var(--texto); }
+  .topnav .brand span { color: var(--azul); }
+  .topnav .links { display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.9rem; }
+  .topnav .links a { color: var(--gris); text-decoration: none; }
+  .topnav .links a:hover { color: var(--azul); }
+
+  /* ---------- HERO ---------- */
+  header.hero { padding: 3.5rem 0 2rem; text-align: center; }
+  header.hero .kicker {
+    display: inline-block; background: var(--azul-claro); color: var(--azul-osc);
+    padding: 0.3rem 0.8rem; border-radius: 999px;
+    font-size: 0.8rem; font-weight: 600; letter-spacing: 0.02em; margin-bottom: 1rem;
+  }
+  header.hero h1 { font-size: 2.1rem; margin: 0 0 0.6rem; }
+  header.hero p { color: var(--gris); max-width: 640px; margin: 0 auto; }
+
+  /* ---------- PROGRESS BAR ---------- */
+  .progreso-wrap { max-width: 460px; margin: 1.75rem auto 0; }
+  .progreso-label {
+    display: flex; justify-content: space-between; font-size: 0.8rem;
+    color: var(--gris); margin-bottom: 0.4rem;
+  }
+  .progreso-track {
+    height: 8px; border-radius: 999px; background: var(--gris-claro); overflow: hidden;
+  }
+  .progreso-fill {
+    height: 100%; width: 0%; background: var(--verde); border-radius: 999px;
+    transition: width 0.35s ease;
+  }
+
+  /* ---------- SECTIONS ---------- */
+  section { padding: 2.75rem 0; border-top: 1px solid var(--borde); }
+  section:first-of-type { border-top: none; }
+  .eyebrow {
+    font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--azul); margin: 0 0 0.4rem;
+  }
+  h2.title { font-size: 1.5rem; margin: 0 0 0.5rem; }
+  .lead { color: var(--gris); max-width: 680px; margin: 0 0 1.75rem; }
+
+  /* ---------- RUTA (etapas) ---------- */
+  .ruta { position: relative; margin: 2rem 0 0; padding-left: 2.6rem; }
+  .ruta::before {
+    content: ""; position: absolute; left: 1.05rem; top: 0.5rem; bottom: 0.5rem;
+    width: 2px; background: var(--borde);
+  }
+  .etapa { position: relative; margin-bottom: 1.4rem; }
+  .etapa:last-child { margin-bottom: 0; }
+  .etapa .num {
+    position: absolute; left: -2.6rem; top: 0.4rem; width: 2.1rem; height: 2.1rem;
+    border-radius: 50%; background: var(--gris-claro); color: var(--gris);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.95rem; font-weight: 700; border: 2px solid var(--borde);
+    transition: all 0.2s ease;
+  }
+  .etapa.hecha .num { background: var(--verde); color: #fff; border-color: var(--verde); }
+
+  .etapa-card {
+    background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 12px;
+    padding: 1.25rem 1.4rem;
+  }
+  .etapa.hecha .etapa-card { border-color: var(--verde); }
+  .etapa-top {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 1rem; flex-wrap: wrap; margin-bottom: 0.4rem;
+  }
+  .etapa-top h3 { margin: 0; font-size: 1.1rem; }
+  .etapa-meta { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+  .pill {
+    font-size: 0.72rem; font-weight: 700; padding: 0.15rem 0.55rem;
+    border-radius: 999px; white-space: nowrap;
+  }
+  .pill.tiempo { background: var(--gris-claro); color: var(--gris); }
+  .pill.prereq { background: var(--naranja-claro); color: var(--naranja); }
+  .etapa p.desc { margin: 0 0 1rem; color: var(--gris); font-size: 0.92rem; max-width: 620px; }
+  .etapa-acciones { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    background: var(--azul); color: #fff; text-decoration: none;
+    font-size: 0.88rem; font-weight: 600; padding: 0.55rem 1rem; border-radius: 8px;
+    border: none; cursor: pointer;
+  }
+  .btn:hover { background: var(--azul-osc); }
+  .btn-outline {
+    background: none; color: var(--azul); border: 1.5px solid var(--azul);
+  }
+  .btn-outline:hover { background: var(--azul-claro); }
+  .marcar {
+    display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer;
+    font-size: 0.85rem; color: var(--gris); user-select: none; background: none; border: none;
+    padding: 0;
+  }
+  .marcar .box {
+    width: 1.15rem; height: 1.15rem; border: 2px solid var(--azul); border-radius: 4px;
+    flex: 0 0 auto; display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; color: #fff; font-weight: 700;
+  }
+  .etapa.hecha .marcar .box { background: var(--verde); border-color: var(--verde); }
+  .etapa.hecha .marcar .box::after { content: "✓"; }
+  .etapa.hecha .marcar span.txt { color: var(--verde); font-weight: 600; }
+
+  /* ---------- COMMAND BLOCKS ---------- */
+  .cmd-group { margin-bottom: 1.5rem; }
+  .cmd-group h3 {
+    font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--gris); margin: 0 0 0.6rem;
+  }
+  pre.cmd {
+    background: var(--oscuro); color: #d9e2ff; border-radius: 10px;
+    padding: 1rem 1.2rem; font-family: "Consolas", "SF Mono", monospace;
+    font-size: 0.85rem; overflow-x: auto; margin: 0 0 0.5rem; line-height: 1.7;
+  }
+  pre.cmd .com { color: #7d8aa8; }
+  .cmd-table { border: 1px solid var(--borde); border-radius: 10px; background: var(--tarjeta); overflow: hidden; }
+  .cmd-row {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 0.65rem 1rem; border-top: 1px solid var(--borde); flex-wrap: wrap;
+  }
+  .cmd-row:first-child { border-top: none; }
+  .cmd-row code {
+    font-family: "Consolas", "SF Mono", monospace; background: var(--oscuro); color: #d9e2ff;
+    padding: 0.3rem 0.6rem; border-radius: 6px; font-size: 0.82rem; min-width: 260px;
+  }
+  .cmd-row .desc { color: var(--gris); font-size: 0.88rem; flex: 1; }
+
+  /* ---------- TIP BOXES ---------- */
+  .tip {
+    border-radius: 10px; padding: 1rem 1.15rem; margin: 1rem 0;
+    border-left: 4px solid var(--azul); background: var(--azul-claro);
+    font-size: 0.9rem;
+  }
+  .tip.warn { border-left-color: var(--naranja); background: var(--naranja-claro); }
+  .tip strong { display: block; margin-bottom: 0.2rem; }
+
+  /* ---------- CHECKLIST ---------- */
+  .checklist { list-style: none; padding: 0; margin: 1.25rem 0 0; }
+  .checklist li {
+    display: flex; gap: 0.7rem; align-items: flex-start;
+    padding: 0.6rem 0; border-top: 1px solid var(--borde);
+  }
+  .checklist li:first-child { border-top: none; }
+  .checklist .box {
+    flex: 0 0 auto; width: 1.15rem; height: 1.15rem; border: 2px solid var(--azul);
+    border-radius: 4px; margin-top: 0.15rem;
+  }
+  .checklist .txt strong { display: block; font-size: 0.92rem; }
+  .checklist .txt span { color: var(--gris); font-size: 0.85rem; }
+
+  footer { text-align: center; color: var(--gris); font-size: 0.85rem; padding: 2.5rem 0 3rem; }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="wrap">
+    <div class="brand">IES9007 <span>· Ruta de aprendizaje</span></div>
+    <div class="links">
+      <a href="#ruta">La ruta</a>
+      <a href="#otro-dispositivo">Abrir en otra compu</a>
+      <a href="#paso-a-paso">Paso a paso completo</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="kicker">ABM de Alumnos · Django</span>
+    <h1>Tu ruta de aprendizaje</h1>
+    <p>Tres etapas, en orden, para pasar de "no entiendo cómo está armado esto" a
+       "puedo programar en equipo sin pisarme con mi compañero". Cada una se apoya
+       en la anterior — no te saltees pasos.</p>
+
+    <div class="progreso-wrap">
+      <div class="progreso-label">
+        <span>Tu progreso</span>
+        <span id="progreso-texto">0 / 3 etapas</span>
+      </div>
+      <div class="progreso-track"><div class="progreso-fill" id="progreso-fill"></div></div>
+    </div>
+  </div>
+</header>
+
+<section id="ruta">
+  <div class="wrap">
+    <p class="eyebrow">La ruta</p>
+    <h2 class="title">Tres etapas, en este orden</h2>
+    <p class="lead">Marcá cada etapa como completada cuando termines de leerla (o de
+       hacer el ejercicio). Se guarda en este navegador, así que la próxima vez que
+       entres vas a ver por dónde te quedaste. "Descargar PDF" abre la guía en una
+       pestaña nueva y dispara el diálogo de impresión: elegí "Guardar como PDF"
+       como destino para tener una copia offline.</p>
+
+    <div class="ruta">
+      <div class="etapa" data-etapa="1">
+        <div class="num">1</div>
+        <div class="etapa-card">
+          <div class="etapa-top">
+            <h3>Guía de conceptos</h3>
+            <div class="etapa-meta">
+              <span class="pill tiempo">~20 min</span>
+            </div>
+          </div>
+          <p class="desc">
+            Antes de tocar código: el patrón MVT de Django, por qué ABM es lo mismo
+            que CRUD, cómo se modeló <code>Alumno</code> y qué archivo le toca a
+            backend y cuál a frontend. Termina planteando el próximo desafío de
+            modelado (relacionar <code>Alumno</code> con <code>Curso</code>).
+          </p>
+          <div class="etapa-acciones">
+            <a class="btn" href="guia-conceptos.html">Abrir guía →</a>
+            <a class="btn btn-outline" href="guia-conceptos.html?pdf=1" target="_blank" rel="noopener" title="Abre la guía en una pestaña nueva y dispara el diálogo de impresión: elegí &quot;Guardar como PDF&quot; como destino.">Descargar PDF ⬇</a>
+            <button class="marcar" data-marcar="1"><span class="box"></span><span class="txt">Marcar como completada</span></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="etapa" data-etapa="2">
+        <div class="num">2</div>
+        <div class="etapa-card">
+          <div class="etapa-top">
+            <h3>Guía de Git y GitHub</h3>
+            <div class="etapa-meta">
+              <span class="pill prereq">Requiere etapa 1</span>
+              <span class="pill tiempo">~25 min</span>
+            </div>
+          </div>
+          <p class="desc">
+            Ahora que sabés qué archivo toca cada uno, hace falta el mecanismo para
+            no pisarse: las cuatro paradas del código (directorio de trabajo → área
+            de preparación → repo local → GitHub), los comandos del día a día, cómo
+            trabajan backend y frontend en paralelo con ramas y Pull Requests, y qué
+            hacer si aparece un conflicto de merge.
+          </p>
+          <div class="etapa-acciones">
+            <a class="btn" href="guia-github.html">Abrir guía →</a>
+            <a class="btn btn-outline" href="guia-github.html?pdf=1" target="_blank" rel="noopener" title="Abre la guía en una pestaña nueva y dispara el diálogo de impresión: elegí &quot;Guardar como PDF&quot; como destino.">Descargar PDF ⬇</a>
+            <button class="marcar" data-marcar="2"><span class="box"></span><span class="txt">Marcar como completada</span></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="etapa" data-etapa="3">
+        <div class="num">3</div>
+        <div class="etapa-card">
+          <div class="etapa-top">
+            <h3>Ejercicio: provocar y resolver un conflicto</h3>
+            <div class="etapa-meta">
+              <span class="pill prereq">Requiere etapa 2</span>
+              <span class="pill tiempo">~15 min</span>
+            </div>
+          </div>
+          <p class="desc">
+            Práctica guiada, con pasos concretos: dos ramas editan la misma línea a
+            propósito, aparece el conflicto, y lo resolvés a mano siguiendo el
+            checklist. Es la etapa donde la teoría de Git deja de ser teoría.
+          </p>
+          <div class="etapa-acciones">
+            <a class="btn" href="ejercicio-conflicto.html">Abrir ejercicio →</a>
+            <a class="btn btn-outline" href="ejercicio-conflicto.html?pdf=1" target="_blank" rel="noopener" title="Abre la guía en una pestaña nueva y dispara el diálogo de impresión: elegí &quot;Guardar como PDF&quot; como destino.">Descargar PDF ⬇</a>
+            <button class="marcar" data-marcar="3"><span class="box"></span><span class="txt">Marcar como completada</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="otro-dispositivo">
+  <div class="wrap">
+    <p class="eyebrow">Otro dispositivo</p>
+    <h2 class="title">Abrir todo esto en otra computadora</h2>
+    <p class="lead">El repositorio vive en GitHub (la "nube"). Si estás en una
+       máquina nueva —tuya, del aula, o la de tu compañero— así lo bajás:</p>
+
+    <div class="cmd-group">
+      <h3>1. Verificar que tengas Git y Python instalados</h3>
+      <pre class="cmd"><span class="com"># en una terminal (PowerShell, cmd o bash)</span>
+git --version
+python --version</pre>
+      <div class="tip">
+        <strong>¿No tenés Git?</strong>
+        Instalalo desde <code>git-scm.com/downloads</code>. Python desde
+        <code>python.org/downloads</code> (marcá "Add to PATH" en el instalador de Windows).
+      </div>
+    </div>
+
+    <div class="cmd-group">
+      <h3>2. Clonar el repositorio</h3>
+      <pre class="cmd"><span class="com"># trae una copia completa del proyecto, con todo su historial</span>
+git clone https://github.com/jonipalomo/abm.git
+cd abm</pre>
+    </div>
+
+    <div class="cmd-group">
+      <h3>3. Abrir las guías</h3>
+      <div class="cmd-table">
+        <div class="cmd-row">
+          <code>Doble clic en index.html</code>
+          <span class="desc">La forma más simple: se abre en el navegador por defecto, sin nada más que instalar</span>
+        </div>
+        <div class="cmd-row">
+          <code>python servir-guias-red.py</code>
+          <span class="desc">Sirve las guías en tu red Wi-Fi, para abrirlas también desde el celular</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cmd-group">
+      <h3>4. (Opcional) Levantar el proyecto Django completo</h3>
+      <pre class="cmd"><span class="com"># instala dependencias, prepara la base y corre el servidor</span>
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver</pre>
+    </div>
+
+    <div class="tip warn">
+      <strong>¿Ya tenías el repo clonado en ese dispositivo?</strong>
+      No lo clones de nuevo: entrá a la carpeta y traé lo último con
+      <code style="font-family:'Consolas','SF Mono',monospace;background:rgba(0,0,0,0.06);padding:0.1rem 0.4rem;border-radius:4px;">git pull</code>.
+      Cloná solo la primera vez en cada máquina.
+    </div>
+  </div>
+</section>
+
+<section id="paso-a-paso">
+  <div class="wrap">
+    <p class="eyebrow">Resumen</p>
+    <h2 class="title">Paso a paso completo, de cero a trabajando en equipo</h2>
+    <p class="lead">Si preferís una sola lista en vez de navegar por secciones,
+       este es el camino completo:</p>
+
+    <ul class="checklist">
+      <li>
+        <div class="box"></div>
+        <div class="txt">
+          <strong>1. Instalar Git y Python en tu máquina</strong>
+          <span>Verificalo con <code>git --version</code> y <code>python --version</code>.</span>
+        </div>
+      </li>
+      <li>
+        <div class="box"></div>
+        <div class="txt">
+          <strong>2. Clonar el repositorio desde GitHub</strong>
+          <span><code>git clone https://github.com/jonipalomo/abm.git</code> y entrar con <code>cd abm</code>.</span>
+        </div>
+      </li>
+      <li>
+        <div class="box"></div>
+        <div class="txt">
+          <strong>3. Leer la guía de conceptos</strong>
+          <span>Entender MVT, ABM/CRUD y cómo está modelado <code>Alumno</code> antes de tocar código.</span>
+        </div>
+      </li>
+      <li>
+        <div class="box"></div>
+        <div class="txt">
+          <strong>4. Leer la guía de Git y GitHub</strong>
+          <span>Comandos del día a día y cómo backend/frontend avanzan en paralelo con ramas y PRs.</span>
+        </div>
+      </li>
+      <li>
+        <div class="box"></div>
+        <div class="txt">
+          <strong>5. Hacer el ejercicio de conflicto de merge</strong>
+          <span>Provocar uno a propósito y resolverlo, para perderle el miedo antes de que pase de verdad.</span>
+        </div>
+      </li>
+      <li>
+        <div class="box"></div>
+        <div class="txt">
+          <strong>6. Levantar el proyecto y probar el ABM</strong>
+          <span><code>pip install -r requirements.txt</code>, <code>python manage.py migrate</code>, <code>python manage.py runserver</code>.</span>
+        </div>
+      </li>
+      <li>
+        <div class="box"></div>
+        <div class="txt">
+          <strong>7. Elegir un rol y trabajar en una rama propia</strong>
+          <span>Backend o frontend, según lo que viste en la guía de conceptos. Rama, commits, push, Pull Request.</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Ruta de aprendizaje · Proyecto ABM de Alumnos · IES9007
+  </div>
+</footer>
+
+<script>
+(function () {
+  var CLAVE = "abm-ruta-progreso";
+  var etapas = document.querySelectorAll(".etapa");
+  var total = etapas.length;
+
+  function leer() {
+    try {
+      return JSON.parse(localStorage.getItem(CLAVE) || "[]");
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function guardar(lista) {
+    try {
+      localStorage.setItem(CLAVE, JSON.stringify(lista));
+    } catch (e) {}
+  }
+
+  function pintar() {
+    var completadas = leer();
+    etapas.forEach(function (etapa) {
+      var id = etapa.getAttribute("data-etapa");
+      etapa.classList.toggle("hecha", completadas.indexOf(id) !== -1);
+    });
+    var pct = total ? Math.round((completadas.length / total) * 100) : 0;
+    document.getElementById("progreso-fill").style.width = pct + "%";
+    document.getElementById("progreso-texto").textContent = completadas.length + " / " + total + " etapas";
+  }
+
+  document.querySelectorAll("[data-marcar]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var id = btn.getAttribute("data-marcar");
+      var completadas = leer();
+      var i = completadas.indexOf(id);
+      if (i === -1) completadas.push(id); else completadas.splice(i, 1);
+      guardar(completadas);
+      pintar();
+    });
+  });
+
+  pintar();
+})();
+</script>
+
+</body>
+</html>
