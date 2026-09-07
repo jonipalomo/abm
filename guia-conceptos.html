@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía de conceptos · ABM de Alumnos</title>
+<style>
+  :root {
+    --azul: #2f6feb;
+    --azul-osc: #1c4fb8;
+    --azul-claro: #eaf1ff;
+    --verde: #1e9e5a;
+    --verde-claro: #e6f6ee;
+    --naranja: #e08a1e;
+    --naranja-claro: #fdf1de;
+    --violeta: #7c4fd6;
+    --violeta-claro: #f2ecfc;
+    --rojo: #d64545;
+    --rojo-claro: #fbeaea;
+    --gris: #667085;
+    --gris-claro: #f1f2f5;
+    --texto: #1f2430;
+    --borde: #e2e5ea;
+    --fondo: #f7f8fa;
+    --tarjeta: #ffffff;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+    color: var(--texto);
+    background: var(--fondo);
+    line-height: 1.55;
+  }
+
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 1.5rem; }
+
+  /* ---------- NAV ---------- */
+  nav.topnav {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--tarjeta);
+    border-bottom: 1px solid var(--borde);
+  }
+  .topnav .wrap {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.9rem 1.5rem; gap: 1rem; flex-wrap: wrap;
+  }
+  .topnav .brand { font-weight: 700; color: var(--texto); }
+  .topnav .brand span { color: var(--azul); }
+  .topnav .links { display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.9rem; }
+  .topnav .links a { color: var(--gris); text-decoration: none; }
+  .topnav .links a:hover { color: var(--azul); }
+
+  /* ---------- HERO ---------- */
+  header.hero {
+    padding: 3.5rem 0 2.5rem;
+    text-align: center;
+  }
+  header.hero .kicker {
+    display: inline-block;
+    background: var(--azul-claro); color: var(--azul-osc);
+    padding: 0.3rem 0.8rem; border-radius: 999px;
+    font-size: 0.8rem; font-weight: 600; letter-spacing: 0.02em;
+    margin-bottom: 1rem;
+  }
+  header.hero h1 { font-size: 2.1rem; margin: 0 0 0.6rem; }
+  header.hero p { color: var(--gris); max-width: 640px; margin: 0 auto; }
+
+  /* ---------- SECTIONS ---------- */
+  section { padding: 2.75rem 0; border-top: 1px solid var(--borde); }
+  section:first-of-type { border-top: none; }
+  .eyebrow {
+    font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--azul); margin: 0 0 0.4rem;
+  }
+  h2.title { font-size: 1.5rem; margin: 0 0 0.5rem; }
+  .lead { color: var(--gris); max-width: 680px; margin: 0 0 1.75rem; }
+
+  /* ---------- CONCEPT CARDS ---------- */
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  .grid2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+  @media (max-width: 720px) { .grid3, .grid2 { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 10px;
+    padding: 1.25rem;
+  }
+  .card h3 { margin: 0 0 0.4rem; font-size: 1.02rem; }
+  .card p { margin: 0; color: var(--gris); font-size: 0.92rem; }
+
+  .badge {
+    display: inline-block; font-size: 0.72rem; font-weight: 700;
+    padding: 0.15rem 0.55rem; border-radius: 999px; margin-bottom: 0.6rem;
+  }
+  .badge.backend { background: var(--azul-claro); color: var(--azul-osc); }
+  .badge.frontend { background: var(--violeta-claro); color: var(--violeta); }
+  .badge.compartido { background: var(--gris-claro); color: var(--gris); }
+
+  /* ---------- FLOW DIAGRAM (MVT) ---------- */
+  .flow {
+    display: flex; align-items: stretch; gap: 0; flex-wrap: wrap;
+    justify-content: center; margin: 1.5rem 0;
+  }
+  .flow-box {
+    background: var(--tarjeta); border: 2px solid var(--borde); border-radius: 10px;
+    padding: 1rem 1.1rem; width: 155px; text-align: center;
+  }
+  .flow-box strong { display: block; font-size: 0.95rem; margin-bottom: 0.25rem; }
+  .flow-box span { font-size: 0.78rem; color: var(--gris); }
+  .flow-box.modelo { border-color: var(--azul); }
+  .flow-box.vista { border-color: var(--naranja); }
+  .flow-box.template { border-color: var(--violeta); }
+  .flow-box.cliente { border-color: var(--gris); }
+  .flow-arrow {
+    display: flex; align-items: center; justify-content: center;
+    width: 46px; font-size: 1.4rem; color: var(--gris);
+  }
+  .flow-arrow.down { display: none; }
+  @media (max-width: 720px) {
+    .flow { flex-direction: column; align-items: center; }
+    .flow-box { width: 220px; }
+    .flow-arrow.right { display: none; }
+    .flow-arrow.down { display: flex; }
+  }
+
+  /* ---------- CRUD TABLE ---------- */
+  .crud-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.9rem; margin: 1.5rem 0; }
+  @media (max-width: 820px) { .crud-grid { grid-template-columns: repeat(2, 1fr); } }
+  .crud-item {
+    border-radius: 10px; padding: 1rem; color: #fff;
+  }
+  .crud-item.alta { background: var(--verde); }
+  .crud-item.consulta { background: var(--azul); }
+  .crud-item.modif { background: var(--naranja); }
+  .crud-item.baja { background: var(--rojo); }
+  .crud-item .letra { font-size: 1.6rem; font-weight: 800; opacity: 0.9; }
+  .crud-item h4 { margin: 0.2rem 0 0.3rem; font-size: 1rem; }
+  .crud-item p { margin: 0; font-size: 0.8rem; opacity: 0.92; }
+  .crud-item code { background: rgba(255,255,255,0.18); padding: 0.05rem 0.35rem; border-radius: 4px; font-size: 0.75rem; }
+
+  /* ---------- UML / ER CLASS BOX ---------- */
+  .uml-box {
+    background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 10px;
+    max-width: 380px; margin: 1.5rem auto; overflow: hidden;
+  }
+  .uml-box .uml-title {
+    background: var(--azul); color: #fff; padding: 0.6rem 1rem;
+    font-weight: 700; text-align: center;
+  }
+  .uml-box ul { list-style: none; margin: 0; padding: 0; }
+  .uml-box li {
+    padding: 0.5rem 1rem; border-top: 1px solid var(--borde);
+    font-family: "Consolas", "SF Mono", monospace; font-size: 0.83rem;
+    display: flex; justify-content: space-between; gap: 0.5rem;
+  }
+  .uml-box li .campo { color: var(--texto); }
+  .uml-box li .tipo { color: var(--gris); text-align: right; }
+  .uml-box li.pk { background: var(--azul-claro); font-weight: 600; }
+  .uml-box li.pk .campo::before { content: "PK · "; font-size: 0.7rem; color: var(--azul-osc); }
+
+  /* ---------- FILE TREE ---------- */
+  .tree { border: 1px solid var(--borde); border-radius: 10px; background: var(--tarjeta); overflow: hidden; }
+  .tree-row {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.6rem 1rem; border-top: 1px solid var(--borde);
+    font-size: 0.88rem; flex-wrap: wrap;
+  }
+  .tree-row:first-child { border-top: none; }
+  .tree-row code {
+    font-family: "Consolas", "SF Mono", monospace; background: var(--gris-claro);
+    padding: 0.1rem 0.4rem; border-radius: 4px; min-width: 230px;
+  }
+  .tree-row .desc { color: var(--gris); flex: 1; }
+  .tag { font-size: 0.68rem; font-weight: 700; padding: 0.12rem 0.5rem; border-radius: 999px; white-space: nowrap; }
+  .tag.backend { background: var(--azul-claro); color: var(--azul-osc); }
+  .tag.frontend { background: var(--violeta-claro); color: var(--violeta); }
+  .tag.compartido { background: var(--gris-claro); color: var(--gris); }
+
+  /* ---------- TIMELINE (request flow) ---------- */
+  .timeline { position: relative; margin: 1.5rem 0 0; padding-left: 2.2rem; }
+  .timeline::before {
+    content: ""; position: absolute; left: 0.85rem; top: 0.4rem; bottom: 0.4rem;
+    width: 2px; background: var(--borde);
+  }
+  .tl-step { position: relative; margin-bottom: 1.4rem; }
+  .tl-step:last-child { margin-bottom: 0; }
+  .tl-step .num {
+    position: absolute; left: -2.2rem; top: 0; width: 1.7rem; height: 1.7rem;
+    border-radius: 50%; background: var(--azul); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.82rem; font-weight: 700;
+  }
+  .tl-step h4 { margin: 0 0 0.2rem; font-size: 0.95rem; }
+  .tl-step p { margin: 0; color: var(--gris); font-size: 0.87rem; }
+  .tl-step code { font-family: "Consolas", "SF Mono", monospace; background: var(--gris-claro); padding: 0.05rem 0.35rem; border-radius: 4px; }
+
+  /* ---------- RELATION PREVIEW ---------- */
+  .relation {
+    display: flex; align-items: center; justify-content: center; gap: 0;
+    margin: 1.75rem 0; flex-wrap: wrap;
+  }
+  .relation .uml-box { margin: 0; }
+  .relation .rel-link {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    width: 110px; color: var(--gris); font-size: 0.75rem; font-weight: 700;
+  }
+  .relation .rel-link .line { width: 100%; height: 2px; background: var(--gris); position: relative; margin: 0.3rem 0; }
+  @media (max-width: 720px) {
+    .relation { flex-direction: column; }
+    .relation .rel-link { width: 2px; height: 50px; flex-direction: row; }
+    .relation .rel-link .line { width: 2px; height: 100%; }
+  }
+
+  /* ---------- CHECKLIST ---------- */
+  .checklist { list-style: none; padding: 0; margin: 1.25rem 0 0; }
+  .checklist li {
+    display: flex; gap: 0.7rem; align-items: flex-start;
+    padding: 0.6rem 0; border-top: 1px solid var(--borde);
+  }
+  .checklist li:first-child { border-top: none; }
+  .checklist .box {
+    flex: 0 0 auto; width: 1.15rem; height: 1.15rem; border: 2px solid var(--azul);
+    border-radius: 4px; margin-top: 0.15rem;
+  }
+  .checklist .txt strong { display: block; font-size: 0.92rem; }
+  .checklist .txt span { color: var(--gris); font-size: 0.85rem; }
+
+  footer {
+    text-align: center; color: var(--gris); font-size: 0.85rem;
+    padding: 2.5rem 0 3rem;
+  }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="wrap">
+    <div class="brand">IES9007 <span>· Guía de conceptos</span></div>
+    <div class="links">
+      <a href="#mvt">Patrón MVT</a>
+      <a href="#crud">ABM = CRUD</a>
+      <a href="#modelo">Modelar Alumno</a>
+      <a href="#anatomia">Anatomía del proyecto</a>
+      <a href="#recorrido">Recorrido de una petición</a>
+      <a href="#equipo">Trabajo en equipo</a>
+      <a href="#siguiente">Próximo desafío</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="kicker">ABM de Alumnos · Django</span>
+    <h1>Antes de programar, modelamos</h1>
+    <p>Esta guía reúne los conceptos base para entender cómo está armado el proyecto
+       y cómo seguir modelándolo entre los dos: quién programa el backend, quién el
+       frontend, y dónde encaja cada pieza.</p>
+  </div>
+</header>
+
+<section id="mvt">
+  <div class="wrap">
+    <p class="eyebrow">Concepto 1</p>
+    <h2 class="title">El patrón MVT de Django</h2>
+    <p class="lead">Django organiza el código en tres piezas que se reparten el trabajo.
+       No es exactamente el clásico MVC, pero se le parece mucho: acá se llama
+       <strong>Modelo – Vista – Template</strong>.</p>
+
+    <div class="flow">
+      <div class="flow-box cliente">
+        <strong>Navegador</strong>
+        <span>hace un pedido HTTP (una URL)</span>
+      </div>
+      <div class="flow-arrow right">→</div>
+      <div class="flow-arrow down">↓</div>
+      <div class="flow-box vista">
+        <strong>Vista (View)</strong>
+        <span>decide qué hacer: lee, valida, guarda</span>
+      </div>
+      <div class="flow-arrow right">→</div>
+      <div class="flow-arrow down">↓</div>
+      <div class="flow-box modelo">
+        <strong>Modelo (Model)</strong>
+        <span>habla con la base de datos</span>
+      </div>
+    </div>
+    <div class="flow">
+      <div class="flow-box vista">
+        <strong>Vista (View)</strong>
+        <span>con los datos ya listos...</span>
+      </div>
+      <div class="flow-arrow right">→</div>
+      <div class="flow-arrow down">↓</div>
+      <div class="flow-box template">
+        <strong>Template (HTML)</strong>
+        <span>arma la página que se ve</span>
+      </div>
+      <div class="flow-arrow right">→</div>
+      <div class="flow-arrow down">↓</div>
+      <div class="flow-box cliente">
+        <strong>Navegador</strong>
+        <span>muestra el resultado</span>
+      </div>
+    </div>
+
+    <div class="grid3">
+      <div class="card">
+        <h3>Modelo</h3>
+        <p>Define <em>qué datos existen</em> y cómo se guardan. En este proyecto:
+           <code>alumnos/models.py</code>. Es el plano de la tabla en la base de datos.</p>
+      </div>
+      <div class="card">
+        <h3>Vista</h3>
+        <p>Contiene <em>la lógica</em>: qué pasa cuando alguien entra a una URL.
+           En este proyecto: <code>alumnos/views.py</code>.</p>
+      </div>
+      <div class="card">
+        <h3>Template</h3>
+        <p>Es <em>lo que se ve</em>: HTML con partes dinámicas.
+           En este proyecto: los <code>.html</code> de <code>templates/</code>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="crud">
+  <div class="wrap">
+    <p class="eyebrow">Concepto 2</p>
+    <h2 class="title">ABM es lo mismo que CRUD</h2>
+    <p class="lead">"ABM" (Alta, Baja, Modificación) es el nombre que usamos en
+       castellano para lo que en inglés se conoce como <strong>CRUD</strong>
+       (Create, Read, Update, Delete). Son las cuatro operaciones básicas que se
+       pueden hacer sobre cualquier dato.</p>
+
+    <div class="crud-grid">
+      <div class="crud-item alta">
+        <div class="letra">A</div>
+        <h4>Alta / Create</h4>
+        <p>Crear un alumno nuevo. Vista: <code>AlumnoCreateView</code></p>
+      </div>
+      <div class="crud-item consulta">
+        <div class="letra">C</div>
+        <h4>Consulta / Read</h4>
+        <p>Ver el listado o un detalle. Vista: <code>AlumnoListView</code></p>
+      </div>
+      <div class="crud-item modif">
+        <div class="letra">M</div>
+        <h4>Modificación / Update</h4>
+        <p>Editar datos existentes. Vista: <code>AlumnoUpdateView</code></p>
+      </div>
+      <div class="crud-item baja">
+        <div class="letra">B</div>
+        <h4>Baja / Delete</h4>
+        <p>Eliminar un registro. Vista: <code>AlumnoDeleteView</code></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="modelo">
+  <div class="wrap">
+    <p class="eyebrow">Concepto 3</p>
+    <h2 class="title">Modelar una entidad: el caso "Alumno"</h2>
+    <p class="lead">Modelar es decidir <em>qué atributos tiene una entidad</em> y
+       <em>de qué tipo es cada uno</em>, antes de escribir una sola línea de vista o
+       de template. Así quedó modelado <code>Alumno</code> en este proyecto:</p>
+
+    <div class="uml-box">
+      <div class="uml-title">Alumno</div>
+      <ul>
+        <li class="pk"><span class="campo">id</span><span class="tipo">entero, autogenerado</span></li>
+        <li><span class="campo">nombre</span><span class="tipo">texto (100)</span></li>
+        <li><span class="campo">apellido</span><span class="tipo">texto (100)</span></li>
+        <li><span class="campo">dni</span><span class="tipo">texto (15), único</span></li>
+        <li><span class="campo">email</span><span class="tipo">email, opcional</span></li>
+        <li><span class="campo">curso</span><span class="tipo">texto (50)</span></li>
+        <li><span class="campo">fecha_nacimiento</span><span class="tipo">fecha, opcional</span></li>
+        <li><span class="campo">activo</span><span class="tipo">sí/no, default sí</span></li>
+        <li><span class="campo">creado</span><span class="tipo">fecha y hora, automático</span></li>
+      </ul>
+    </div>
+    <p class="lead" style="margin-top:0;">El campo <strong>id</strong> es la
+       <strong>clave primaria</strong>: identifica sin ambigüedad a cada alumno y
+       Django lo crea solo, no hace falta declararlo. La restricción "único" en
+       <code>dni</code> evita que se carguen dos alumnos con el mismo documento.</p>
+  </div>
+</section>
+
+<section id="anatomia">
+  <div class="wrap">
+    <p class="eyebrow">Concepto 4</p>
+    <h2 class="title">Anatomía del proyecto: quién toca qué</h2>
+    <p class="lead">Cada archivo tiene una responsabilidad. Así se reparten entre
+       backend y frontend:</p>
+
+    <div class="tree">
+      <div class="tree-row">
+        <code>alumnos/models.py</code>
+        <span class="desc">Define la entidad Alumno y sus campos</span>
+        <span class="tag backend">Backend</span>
+      </div>
+      <div class="tree-row">
+        <code>alumnos/forms.py</code>
+        <span class="desc">Valida los datos que llegan del formulario</span>
+        <span class="tag backend">Backend</span>
+      </div>
+      <div class="tree-row">
+        <code>alumnos/views.py</code>
+        <span class="desc">Lógica: qué hace cada URL (listar, crear, editar, borrar)</span>
+        <span class="tag backend">Backend</span>
+      </div>
+      <div class="tree-row">
+        <code>alumnos/urls.py</code>
+        <span class="desc">Mapa de rutas del ABM</span>
+        <span class="tag backend">Backend</span>
+      </div>
+      <div class="tree-row">
+        <code>alumnos/admin.py</code>
+        <span class="desc">Configura el panel /admin/</span>
+        <span class="tag backend">Backend</span>
+      </div>
+      <div class="tree-row">
+        <code>templates/base.html</code>
+        <span class="desc">Esqueleto visual común (header, nav, footer)</span>
+        <span class="tag frontend">Frontend</span>
+      </div>
+      <div class="tree-row">
+        <code>templates/home.html</code>
+        <span class="desc">Landing page del proyecto</span>
+        <span class="tag frontend">Frontend</span>
+      </div>
+      <div class="tree-row">
+        <code>alumnos/templates/alumnos/*.html</code>
+        <span class="desc">Listado, formulario y confirmación de borrado</span>
+        <span class="tag frontend">Frontend</span>
+      </div>
+      <div class="tree-row">
+        <code>static/css/style.css</code>
+        <span class="desc">Estilos visuales del sitio</span>
+        <span class="tag frontend">Frontend</span>
+      </div>
+      <div class="tree-row">
+        <code>config/settings.py</code>
+        <span class="desc">Configuración general del proyecto Django</span>
+        <span class="tag compartido">Compartido</span>
+      </div>
+      <div class="tree-row">
+        <code>manage.py</code>
+        <span class="desc">Punto de entrada para correr comandos</span>
+        <span class="tag compartido">Compartido</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="recorrido">
+  <div class="wrap">
+    <p class="eyebrow">Concepto 5</p>
+    <h2 class="title">El recorrido de una petición: dar de alta un alumno</h2>
+    <p class="lead">Siguiendo el ejemplo de "crear un alumno nuevo", así viajan los
+       datos por todo el proyecto:</p>
+
+    <div class="timeline">
+      <div class="tl-step">
+        <div class="num">1</div>
+        <h4>Click en "+ Nuevo alumno"</h4>
+        <p>El navegador pide la página <code>/alumnos/nuevo/</code>.</p>
+      </div>
+      <div class="tl-step">
+        <div class="num">2</div>
+        <h4>Django resuelve la URL</h4>
+        <p><code>config/urls.py</code> deriva a <code>alumnos/urls.py</code>, que la
+           asocia a <code>AlumnoCreateView</code>.</p>
+      </div>
+      <div class="tl-step">
+        <div class="num">3</div>
+        <h4>La vista muestra el formulario</h4>
+        <p><code>AlumnoCreateView</code> usa <code>AlumnoForm</code> y renderiza
+           <code>alumno_form.html</code> (vacío, primera vez).</p>
+      </div>
+      <div class="tl-step">
+        <div class="num">4</div>
+        <h4>El usuario completa y envía</h4>
+        <p>El navegador manda los datos por <code>POST</code> a la misma URL.</p>
+      </div>
+      <div class="tl-step">
+        <div class="num">5</div>
+        <h4>Se valida y se guarda</h4>
+        <p><code>AlumnoForm</code> valida (¿DNI único? ¿campos obligatorios completos?)
+           y, si está todo bien, <code>models.py</code> guarda el registro en la
+           base de datos.</p>
+      </div>
+      <div class="tl-step">
+        <div class="num">6</div>
+        <h4>Redirección al listado</h4>
+        <p>La vista redirige a <code>/alumnos/</code> y muestra un mensaje de éxito.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="equipo">
+  <div class="wrap">
+    <p class="eyebrow">Concepto 6</p>
+    <h2 class="title">Trabajar de a dos sobre el mismo repositorio</h2>
+    <p class="lead">Backend y frontend avanzan en paralelo sin pisarse el trabajo
+       usando ramas de Git y Pull Requests (PR):</p>
+
+    <div class="timeline">
+      <div class="tl-step">
+        <div class="num">1</div>
+        <h4>Crear una rama desde <code>main</code></h4>
+        <p><code>git checkout -b frontend-landing</code> (o <code>backend-validacion-dni</code>)</p>
+      </div>
+      <div class="tl-step">
+        <div class="num">2</div>
+        <h4>Programar en esa rama</h4>
+        <p>Commits chicos y frecuentes, con mensajes claros de qué se hizo.</p>
+      </div>
+      <div class="tl-step">
+        <div class="num">3</div>
+        <h4>Subir la rama</h4>
+        <p><code>git push -u origin frontend-landing</code></p>
+      </div>
+      <div class="tl-step">
+        <div class="num">4</div>
+        <h4>Abrir un Pull Request en GitHub</h4>
+        <p>Explicar qué cambió y por qué, para que el compañero lo entienda rápido.</p>
+      </div>
+      <div class="tl-step">
+        <div class="num">5</div>
+        <h4>Revisión cruzada</h4>
+        <p>El otro desarrollador lee el código, comenta o aprueba.</p>
+      </div>
+      <div class="tl-step">
+        <div class="num">6</div>
+        <h4>Merge a <code>main</code></h4>
+        <p>Una vez aprobado, se integra y ambos actualizan su copia local con
+           <code>git pull</code>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="siguiente">
+  <div class="wrap">
+    <p class="eyebrow">Concepto 7</p>
+    <h2 class="title">Próximo desafío de modelado: relacionar entidades</h2>
+    <p class="lead">Hoy <code>curso</code> es solo un campo de texto dentro de
+       <code>Alumno</code>. El siguiente paso natural para seguir modelando es
+       convertirlo en una entidad propia y <strong>relacionarla</strong> con
+       <code>Alumno</code> mediante una clave foránea (Foreign Key): un curso tiene
+       muchos alumnos, y cada alumno pertenece a un solo curso.</p>
+
+    <div class="relation">
+      <div class="uml-box" style="max-width:230px;">
+        <div class="uml-title">Curso</div>
+        <ul>
+          <li class="pk"><span class="campo">id</span><span class="tipo">PK</span></li>
+          <li><span class="campo">nombre</span><span class="tipo">texto</span></li>
+          <li><span class="campo">turno</span><span class="tipo">texto</span></li>
+        </ul>
+      </div>
+      <div class="rel-link">
+        <span>1</span>
+        <div class="line"></div>
+        <span>N</span>
+      </div>
+      <div class="uml-box" style="max-width:230px;">
+        <div class="uml-title">Alumno</div>
+        <ul>
+          <li class="pk"><span class="campo">id</span><span class="tipo">PK</span></li>
+          <li><span class="campo">...</span><span class="tipo">otros campos</span></li>
+          <li><span class="campo">curso_id</span><span class="tipo">FK → Curso</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="lead">La lectura es: <strong>"un Curso tiene muchos Alumnos"</strong>
+       (relación uno-a-muchos, 1:N). Es el mismo tipo de decisión de modelado que ya
+       se tomó con <code>Alumno</code>, aplicada a una entidad nueva.</p>
+
+    <h3 style="margin-bottom:0.75rem;">Checklist para encarar este desafío</h3>
+    <ul class="checklist">
+      <li>
+        <div class="box"></div>
+        <div class="txt">
+          <strong>Backend: crear el modelo <code>Curso</code></strong>
+          <span>Nuevo modelo en <code>alumnos/models.py</code> (o una app nueva
+            <code>cursos</code>) con <code>nombre</code> y <code>turno</code>.</span>
+        </div>
+      </li>
+      <li>
+        <div class="box"></div>
+        <div class="txt">
+          <strong>Backend: reemplazar el campo <code>curso</code></strong>
+          <span>Cambiarlo por <code>curso = models.ForeignKey(Curso, on_delete=models.PROTECT)</code>
+            y generar la migración.</span>
+        </div>
+      </li>
+      <li>
+        <div class="box"></div>
+        <div class="txt">
+          <strong>Frontend: actualizar el formulario y el listado</strong>
+          <span>El campo pasa a ser un desplegable (select) en vez de texto libre;
+            mostrar el nombre del curso en la tabla.</span>
+        </div>
+      </li>
+      <li>
+        <div class="box"></div>
+        <div class="txt">
+          <strong>En conjunto: revisar el flujo completo</strong>
+          <span>Probar alta, edición y listado de alumnos con la nueva relación, y
+            registrar el cambio en el README.</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Guía de conceptos · Proyecto ABM de Alumnos · IES9007
+  </div>
+</footer>
+
+</body>
+</html>
