@@ -12,6 +12,8 @@ Pensado para que trabajen **dos desarrolladores en paralelo**: uno de **backend*
 No se usa entorno virtual (`venv`) para simplificar el setup: las dependencias se instalan
 directo con `pip` en el Python del sistema.
 
+**Última actualización a cargo de:** _(completar)_
+
 ---
 
 ## Requisitos previos
