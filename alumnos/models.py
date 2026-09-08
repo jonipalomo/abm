@@ -1,4 +1,3 @@
-```python
 from django.db import models
 
 

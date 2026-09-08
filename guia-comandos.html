@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía de comandos por nivel · ABM de Alumnos</title>
+<style>
+  :root {
+    --azul: #2f6feb;
+    --azul-osc: #1c4fb8;
+    --azul-claro: #eaf1ff;
+    --verde: #1e9e5a;
+    --verde-claro: #e6f6ee;
+    --naranja: #e08a1e;
+    --naranja-claro: #fdf1de;
+    --violeta: #7c4fd6;
+    --violeta-claro: #f2ecfc;
+    --rojo: #d64545;
+    --rojo-claro: #fbeaea;
+    --gris: #667085;
+    --gris-claro: #f1f2f5;
+    --texto: #1f2430;
+    --borde: #e2e5ea;
+    --fondo: #f7f8fa;
+    --tarjeta: #ffffff;
+    --oscuro: #1b1f27;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+    color: var(--texto);
+    background: var(--fondo);
+    line-height: 1.55;
+  }
+
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 1.5rem; }
+
+  /* ---------- NAV ---------- */
+  nav.topnav {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--tarjeta);
+    border-bottom: 1px solid var(--borde);
+  }
+  .topnav .wrap {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.9rem 1.5rem; gap: 1rem; flex-wrap: wrap;
+  }
+  .topnav .brand { font-weight: 700; color: var(--texto); }
+  .topnav .brand span { color: var(--azul); }
+  .topnav .links { display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.9rem; }
+  .topnav .links a { color: var(--gris); text-decoration: none; }
+  .topnav .links a:hover { color: var(--azul); }
+  .topnav .links a.volver { color: var(--azul); font-weight: 700; }
+
+  @media print {
+    nav.topnav { display: none; }
+  }
+
+  /* ---------- HERO ---------- */
+  header.hero { padding: 3.5rem 0 2.5rem; text-align: center; }
+  header.hero .kicker {
+    display: inline-block; background: var(--azul-claro); color: var(--azul-osc);
+    padding: 0.3rem 0.8rem; border-radius: 999px;
+    font-size: 0.8rem; font-weight: 600; letter-spacing: 0.02em; margin-bottom: 1rem;
+  }
+  header.hero h1 { font-size: 2.1rem; margin: 0 0 0.6rem; }
+  header.hero p { color: var(--gris); max-width: 640px; margin: 0 auto; }
+
+  /* ---------- NIVELES NAV (quick jump) ---------- */
+  .niveles-quick { display: flex; justify-content: center; gap: 0.75rem; margin-top: 1.75rem; flex-wrap: wrap; }
+  .niveles-quick a {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-size: 0.85rem; font-weight: 600; text-decoration: none;
+    padding: 0.5rem 1rem; border-radius: 999px; border: 1.5px solid var(--borde);
+    color: var(--texto); background: var(--tarjeta);
+  }
+  .niveles-quick a .dot { width: 0.55rem; height: 0.55rem; border-radius: 50%; }
+  .niveles-quick a.n1 .dot { background: var(--verde); }
+  .niveles-quick a.n2 .dot { background: var(--azul); }
+  .niveles-quick a.n3 .dot { background: var(--violeta); }
+  .niveles-quick a.n4 .dot { background: var(--naranja); }
+  .niveles-quick a:hover { border-color: currentColor; }
+
+  /* ---------- SECTIONS ---------- */
+  section { padding: 2.75rem 0; border-top: 1px solid var(--borde); }
+  section:first-of-type { border-top: none; }
+  .eyebrow {
+    font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--azul); margin: 0 0 0.4rem;
+  }
+  .eyebrow.verde { color: var(--verde); }
+  .eyebrow.violeta { color: var(--violeta); }
+  h2.title { font-size: 1.5rem; margin: 0 0 0.5rem; }
+  .lead { color: var(--gris); max-width: 680px; margin: 0 0 1.75rem; }
+
+  /* ---------- COMMAND TABLE ---------- */
+  .cmd-group { margin-bottom: 1.5rem; }
+  .cmd-group h3 {
+    font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--gris); margin: 0 0 0.6rem;
+  }
+  .cmd-table { border: 1px solid var(--borde); border-radius: 10px; background: var(--tarjeta); overflow: hidden; }
+  .cmd-row {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 0.65rem 1rem; border-top: 1px solid var(--borde); flex-wrap: wrap;
+  }
+  .cmd-row:first-child { border-top: none; }
+  .cmd-row code {
+    font-family: "Consolas", "SF Mono", monospace; background: var(--oscuro); color: #d9e2ff;
+    padding: 0.3rem 0.6rem; border-radius: 6px; font-size: 0.82rem; min-width: 280px;
+  }
+  .cmd-row .desc { color: var(--gris); font-size: 0.88rem; flex: 1; }
+
+  /* ---------- ROLE SPLIT ---------- */
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin: 1.5rem 0; }
+  @media (max-width: 760px) { .split { grid-template-columns: 1fr; } }
+  .role-col { border-radius: 12px; overflow: hidden; border: 1px solid var(--borde); background: var(--tarjeta); }
+  .role-head { padding: 0.9rem 1.1rem; color: #fff; font-weight: 700; }
+  .role-col.p1 .role-head { background: var(--azul); }
+  .role-col.p2 .role-head { background: var(--violeta); }
+  .role-steps { padding: 1rem 1.1rem; }
+  .role-steps .step { margin-bottom: 0.85rem; }
+  .role-steps .step:last-child { margin-bottom: 0; }
+  .role-steps .step p { margin: 0 0 0.3rem; font-size: 0.82rem; color: var(--gris); }
+  .role-steps .step code {
+    display: block; font-family: "Consolas", "SF Mono", monospace;
+    background: var(--oscuro); color: #d9e2ff; padding: 0.4rem 0.6rem;
+    border-radius: 6px; font-size: 0.8rem; overflow-x: auto; white-space: pre;
+  }
+
+  /* ---------- ALERT / TIP BOXES ---------- */
+  .tip {
+    border-radius: 10px; padding: 1rem 1.15rem; margin: 1rem 0;
+    border-left: 4px solid var(--azul); background: var(--azul-claro);
+    font-size: 0.9rem;
+  }
+  .tip.warn { border-left-color: var(--naranja); background: var(--naranja-claro); }
+  .tip.danger { border-left-color: var(--rojo); background: var(--rojo-claro); }
+  .tip.verde { border-left-color: var(--verde); background: var(--verde-claro); }
+  .tip strong { display: block; margin-bottom: 0.2rem; }
+  .tip code { font-family: "Consolas", "SF Mono", monospace; background: rgba(0,0,0,0.06); padding: 0.1rem 0.4rem; border-radius: 4px; }
+
+  /* ---------- CODE FILE BLOCKS ---------- */
+  .ejemplo-banner {
+    border-radius: 12px; padding: 1.1rem 1.3rem; margin: 0 0 1.75rem;
+    background: var(--gris-claro); border: 1px dashed var(--borde); font-size: 0.9rem;
+  }
+  .ejemplo-banner strong { display: block; margin-bottom: 0.25rem; color: var(--texto); }
+  .code-file {
+    background: var(--oscuro); border-radius: 10px; overflow: hidden;
+    margin: 0 0 1.25rem; border: 1px solid #2a2f3d;
+  }
+  .code-file .fname {
+    background: #12151c; color: #9aa4c2; font-family: "Consolas", "SF Mono", monospace;
+    font-size: 0.78rem; padding: 0.55rem 0.9rem; border-bottom: 1px solid #2a2f3d;
+    display: flex; justify-content: space-between; gap: 1rem;
+  }
+  .code-file .fname .tag {
+    font-family: system-ui, sans-serif; font-size: 0.68rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.04em; color: var(--verde);
+  }
+  .code-file pre {
+    margin: 0; padding: 0.85rem 0; overflow-x: auto;
+    font-family: "Consolas", "SF Mono", monospace; font-size: 0.8rem;
+    color: #b6c0de; line-height: 1.7;
+  }
+  .code-file pre span.line { display: block; padding: 0 1.1rem; white-space: pre; }
+  .code-file pre span.line.add {
+    background: rgba(30, 158, 90, 0.2); color: #d9e2ff;
+    border-left: 3px solid var(--verde); padding-left: calc(1.1rem - 3px);
+  }
+  .code-file pre span.line.add::before { content: "+ "; color: var(--verde); font-weight: 700; }
+  .code-file pre span.line:not(.add)::before { content: "  "; }
+  .nota-archivo {
+    font-size: 0.85rem; color: var(--gris); margin: -0.5rem 0 1.25rem;
+    padding: 0.6rem 0.9rem; border-left: 3px solid var(--gris); background: var(--gris-claro);
+    border-radius: 0 8px 8px 0;
+  }
+
+  /* ---------- GIT GRAPH DIAGRAM ---------- */
+  .git-graph { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 12px; padding: 1rem; margin: 0 0 1.25rem; overflow-x: auto; }
+  .git-graph svg { display: block; min-width: 720px; width: 100%; height: auto; }
+  .graph-legend { display: flex; gap: 1.5rem; flex-wrap: wrap; font-size: 0.82rem; color: var(--gris); margin: 0 0 1.75rem; }
+  .graph-legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .graph-legend .sw { width: 0.9rem; height: 0.9rem; border-radius: 3px; }
+  .graph-legend .sw.main { background: var(--verde); }
+  .graph-legend .sw.p1 { background: var(--azul); }
+  .graph-legend .sw.p2 { background: var(--violeta); }
+
+  /* ---------- TIMELINE (unificar) ---------- */
+  .timeline { position: relative; margin: 1.5rem 0 0; padding-left: 2.4rem; }
+  .timeline::before {
+    content: ""; position: absolute; left: 0.95rem; top: 0.4rem; bottom: 0.4rem;
+    width: 2px; background: var(--borde);
+  }
+  .tl-step { position: relative; margin-bottom: 1.5rem; }
+  .tl-step:last-child { margin-bottom: 0; }
+  .tl-step .num {
+    position: absolute; left: -2.4rem; top: 0; width: 1.9rem; height: 1.9rem;
+    border-radius: 50%; background: var(--gris); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem; font-weight: 700; z-index: 1;
+  }
+  .tl-step .num.main { background: var(--verde); }
+  .tl-step .num.p1 { background: var(--azul); }
+  .tl-step .num.p2 { background: var(--violeta); }
+  .tl-step h4 { margin: 0 0 0.15rem; font-size: 0.98rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+  .tl-step .quien {
+    font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em;
+    padding: 0.1rem 0.5rem; border-radius: 999px;
+  }
+  .tl-step .quien.main { background: var(--verde-claro); color: #147a45; }
+  .tl-step .quien.p1 { background: var(--azul-claro); color: var(--azul-osc); }
+  .tl-step .quien.p2 { background: var(--violeta-claro); color: #5a34a8; }
+  .tl-step p.desc { margin: 0 0 0.55rem; color: var(--gris); font-size: 0.87rem; }
+
+  footer { text-align: center; color: var(--gris); font-size: 0.85rem; padding: 2.5rem 0 3rem; }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="wrap">
+    <div class="brand">IES9007 <span>· Comandos por nivel</span></div>
+    <div class="links">
+      <a href="index.html" class="volver">← Ruta de aprendizaje</a>
+      <a href="#inicial">Nivel inicial</a>
+      <a href="#programador1">Programador 1</a>
+      <a href="#programador2">Programador 2</a>
+      <a href="#unificar">Unificar el trabajo</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="kicker">ABM de Alumnos · Referencia rápida</span>
+    <h1>Guía de comandos por nivel</h1>
+    <p>Los mismos comandos de Git, agrupados según quién los necesita: lo mínimo
+       para arrancar, y el flujo del día a día para cada uno de los dos
+       programadores que trabajan en paralelo sobre el repositorio.</p>
+
+    <div class="niveles-quick">
+      <a class="n1" href="#inicial"><span class="dot"></span> Nivel inicial</a>
+      <a class="n2" href="#programador1"><span class="dot"></span> Programador 1</a>
+      <a class="n3" href="#programador2"><span class="dot"></span> Programador 2</a>
+      <a class="n4" href="#unificar"><span class="dot"></span> Unificar el trabajo</a>
+    </div>
+  </div>
+</header>
+
+<section id="inicial">
+  <div class="wrap">
+    <p class="eyebrow verde">Nivel inicial</p>
+    <h2 class="title">Lo mínimo para empezar a trabajar</h2>
+    <p class="lead">Estos comandos alcanzan para clonar el proyecto, ver qué
+       cambiaste y guardar tu trabajo. Es la base que necesitan los dos
+       programadores antes de dividirse tareas.</p>
+
+    <div class="cmd-group">
+      <h3>Una sola vez por máquina</h3>
+      <div class="cmd-table">
+        <div class="cmd-row">
+          <code>git config --global user.name "Tu Nombre"</code>
+          <span class="desc">Identifica quién hizo cada commit</span>
+        </div>
+        <div class="cmd-row">
+          <code>git config --global user.email "tu@email.com"</code>
+          <span class="desc">Debe coincidir con el email de tu cuenta de GitHub</span>
+        </div>
+        <div class="cmd-row">
+          <code>git clone https://github.com/jonipalomo/abm.git</code>
+          <span class="desc">Trae una copia completa del repositorio</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cmd-group">
+      <h3>Ver en qué estás parado</h3>
+      <div class="cmd-table">
+        <div class="cmd-row">
+          <code>git status</code>
+          <span class="desc">Qué archivos cambiaste y en qué rama estás</span>
+        </div>
+        <div class="cmd-row">
+          <code>git diff</code>
+          <span class="desc">Qué líneas exactas cambiaron, línea por línea</span>
+        </div>
+        <div class="cmd-row">
+          <code>git log --oneline</code>
+          <span class="desc">Historial de commits, uno por línea</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cmd-group">
+      <h3>Guardar y sincronizar</h3>
+      <div class="cmd-table">
+        <div class="cmd-row">
+          <code>git add nombre-archivo.py</code>
+          <span class="desc">Prepara un archivo puntual para el commit</span>
+        </div>
+        <div class="cmd-row">
+          <code>git commit -m "mensaje claro"</code>
+          <span class="desc">Guarda los cambios preparados en el historial local</span>
+        </div>
+        <div class="cmd-row">
+          <code>git pull</code>
+          <span class="desc">Trae los cambios que subió tu compañero</span>
+        </div>
+        <div class="cmd-row">
+          <code>git push</code>
+          <span class="desc">Sube tus commits al repositorio remoto</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tip verde">
+      <strong>Con esto ya podés trabajar</strong>
+      Si recién estás empezando, quedate con estos ocho comandos. El resto de la
+      guía (ramas, Pull Requests) llega cuando dos personas tocan el mismo
+      repositorio al mismo tiempo.
+    </div>
+  </div>
+</section>
+
+<section id="programador1">
+  <div class="wrap">
+    <p class="eyebrow">Programador 1 · Backend</p>
+    <h2 class="title">Flujo del día a día, con código real</h2>
+    <p class="lead">Además de los comandos del nivel inicial, cuando trabajás en
+       paralelo con tu compañero necesitás manejar tu propia rama. Backend trabaja
+       sobre <code style="font-family:'Consolas','SF Mono',monospace;background:var(--gris-claro);padding:0.1rem 0.4rem;border-radius:4px;">alumnos/models.py</code>,
+       <code style="font-family:'Consolas','SF Mono',monospace;background:var(--gris-claro);padding:0.1rem 0.4rem;border-radius:4px;">forms.py</code> y
+       <code style="font-family:'Consolas','SF Mono',monospace;background:var(--gris-claro);padding:0.1rem 0.4rem;border-radius:4px;">views.py</code>.</p>
+
+    <div class="ejemplo-banner">
+      <strong>Ejemplo de tarea: agregar el campo "teléfono" al alumno</strong>
+      Backend define el campo en el modelo y lo habilita en el formulario. En la
+      sección de <a href="#programador2">Programador 2</a> se ve cómo frontend
+      lo muestra en el listado, en paralelo, sin pisar estos mismos archivos.
+    </div>
+
+    <div class="step">
+      <p style="font-size:0.85rem;color:var(--gris);margin-bottom:0.5rem;">1. Empezar el día actualizado y crear tu rama</p>
+      <div class="code-file">
+        <div class="fname">terminal</div>
+        <pre><span class="line">git checkout main</span><span class="line">git pull</span><span class="line">git checkout -b programador1-telefono-alumno</span></pre>
+      </div>
+    </div>
+
+    <div class="cmd-group">
+      <h3>2. Agregar el campo en el modelo</h3>
+      <div class="code-file">
+        <div class="fname">alumnos/models.py <span class="tag">modificar</span></div>
+        <pre><span class="line">class Alumno(models.Model):</span><span class="line">    nombre = models.CharField(max_length=100)</span><span class="line">    apellido = models.CharField(max_length=100)</span><span class="line">    dni = models.CharField(max_length=15, unique=True)</span><span class="line">    email = models.EmailField(blank=True)</span><span class="line add">    telefono = models.CharField(max_length=20, blank=True)</span><span class="line">    curso = models.ForeignKey(</span><span class="line">        Curso,</span><span class="line">        on_delete=models.PROTECT,</span><span class="line">        related_name='alumnos'</span><span class="line">    )</span></pre>
+      </div>
+    </div>
+
+    <div class="cmd-group">
+      <h3>3. Habilitarlo en el formulario</h3>
+      <div class="code-file">
+        <div class="fname">alumnos/forms.py <span class="tag">modificar</span></div>
+        <pre><span class="line">class AlumnoForm(forms.ModelForm):</span><span class="line">    class Meta:</span><span class="line">        model = Alumno</span><span class="line add">        fields = ['nombre', 'apellido', 'dni', 'email', 'telefono', 'curso', 'fecha_nacimiento', 'activo']</span></pre>
+      </div>
+      <div class="nota-archivo">
+        No hace falta tocar <code style="font-family:inherit;background:none;padding:0;">alumno_form.html</code>:
+        ese template recorre <code style="font-family:inherit;background:none;padding:0;">&#123;% for field in form %&#125;</code>,
+        así que cualquier campo nuevo del formulario aparece solo.
+      </div>
+    </div>
+
+    <div class="cmd-group">
+      <h3>4. Generar y aplicar la migración</h3>
+      <div class="code-file">
+        <div class="fname">terminal</div>
+        <pre><span class="line">python manage.py makemigrations alumnos</span><span class="line">python manage.py migrate</span><span class="line">python manage.py runserver</span></pre>
+      </div>
+      <div class="nota-archivo">
+        <code style="font-family:inherit;background:none;padding:0;">makemigrations</code> crea un archivo nuevo dentro de
+        <code style="font-family:inherit;background:none;padding:0;">alumnos/migrations/</code> (algo como
+        <code style="font-family:inherit;background:none;padding:0;">0004_alumno_telefono.py</code>). Ese archivo también se commitea:
+        sin él, la migración no existe para tu compañero ni para el servidor.
+      </div>
+    </div>
+
+    <div class="cmd-group">
+      <h3>5. Guardar y subir solo lo que tocaste</h3>
+      <div class="code-file">
+        <div class="fname">terminal</div>
+        <pre><span class="line">git status</span><span class="line">git add alumnos/models.py alumnos/forms.py alumnos/migrations/</span><span class="line">git commit -m "Agregar campo telefono a Alumno"</span><span class="line">git push -u origin programador1-telefono-alumno</span></pre>
+      </div>
+    </div>
+
+    <div class="tip warn">
+      <strong>Antes de crear una rama nueva</strong>
+      Siempre pasá primero por <code>git checkout main</code> y <code>git pull</code>.
+      Si creás la rama desde un <code>main</code> viejo, tu Pull Request va a arrastrar
+      cambios que ya no hacen falta.
+    </div>
+  </div>
+</section>
+
+<section id="programador2">
+  <div class="wrap">
+    <p class="eyebrow violeta">Programador 2 · Frontend</p>
+    <h2 class="title">Mismo flujo, tu propia rama y tus propios archivos</h2>
+    <p class="lead">Es la misma rutina que Programador 1: la diferencia está en que
+       trabajás en paralelo sobre otra rama y, en lo posible, sobre archivos
+       distintos — en este proyecto, los que están en
+       <code style="font-family:'Consolas','SF Mono',monospace;background:var(--gris-claro);padding:0.1rem 0.4rem;border-radius:4px;">templates/</code> y
+       <code style="font-family:'Consolas','SF Mono',monospace;background:var(--gris-claro);padding:0.1rem 0.4rem;border-radius:4px;">static/</code>.</p>
+
+    <div class="ejemplo-banner">
+      <strong>Mismo ejemplo, del lado del frontend</strong>
+      Mientras Programador 1 agrega el campo <code style="font-family:inherit;background:none;padding:0;">telefono</code> al
+      modelo (sección <a href="#programador1">Programador 1</a>), acá se muestra
+      cómo hacerlo visible en el listado de alumnos.
+    </div>
+
+    <div class="step">
+      <p style="font-size:0.85rem;color:var(--gris);margin-bottom:0.5rem;">1. Empezar el día actualizado y crear tu rama</p>
+      <div class="code-file">
+        <div class="fname">terminal</div>
+        <pre><span class="line">git checkout main</span><span class="line">git pull</span><span class="line">git checkout -b programador2-mostrar-telefono</span></pre>
+      </div>
+    </div>
+
+    <div class="cmd-group">
+      <h3>2. Agregar la columna en el listado</h3>
+      <div class="code-file">
+        <div class="fname">alumnos/templates/alumnos/alumno_list.html <span class="tag">modificar</span></div>
+        <pre><span class="line">&lt;tr&gt;</span><span class="line">    &lt;th&gt;Apellido&lt;/th&gt;</span><span class="line">    &lt;th&gt;Nombre&lt;/th&gt;</span><span class="line">    &lt;th&gt;DNI&lt;/th&gt;</span><span class="line add">    &lt;th&gt;Teléfono&lt;/th&gt;</span><span class="line">    &lt;th&gt;Curso&lt;/th&gt;</span><span class="line">    &lt;th&gt;Activo&lt;/th&gt;</span><span class="line">    &lt;th&gt;&lt;/th&gt;</span><span class="line">&lt;/tr&gt;</span></pre>
+      </div>
+      <div class="code-file">
+        <div class="fname">alumnos/templates/alumnos/alumno_list.html <span class="tag">modificar</span></div>
+        <pre><span class="line">&lt;tr&gt;</span><span class="line">    &lt;td&gt;&#123;&#123; alumno.apellido &#125;&#125;&lt;/td&gt;</span><span class="line">    &lt;td&gt;&#123;&#123; alumno.nombre &#125;&#125;&lt;/td&gt;</span><span class="line">    &lt;td&gt;&#123;&#123; alumno.dni &#125;&#125;&lt;/td&gt;</span><span class="line add">    &lt;td&gt;&#123;&#123; alumno.telefono|default:"—" &#125;&#125;&lt;/td&gt;</span><span class="line">    &lt;td&gt;&#123;&#123; alumno.curso &#125;&#125;&lt;/td&gt;</span></pre>
+      </div>
+      <div class="nota-archivo">
+        Esta columna solo va a mostrar datos reales una vez que la rama de backend
+        con el campo <code style="font-family:inherit;background:none;padding:0;">telefono</code> esté mergeada a
+        <code style="font-family:inherit;background:none;padding:0;">main</code>. Hasta entonces no rompe nada: Django
+        simplemente muestra vacío.
+      </div>
+    </div>
+
+    <div class="cmd-group">
+      <h3>3. Probar y guardar</h3>
+      <div class="code-file">
+        <div class="fname">terminal</div>
+        <pre><span class="line">python manage.py runserver</span><span class="line">git status</span><span class="line">git add alumnos/templates/alumnos/alumno_list.html</span><span class="line">git commit -m "Mostrar telefono en el listado de alumnos"</span><span class="line">git push -u origin programador2-mostrar-telefono</span></pre>
+      </div>
+    </div>
+
+    <div class="cmd-group">
+      <h3>4. Cuando el otro ya mergeó algo a main</h3>
+      <div class="cmd-table">
+        <div class="cmd-row">
+          <code>git checkout main</code>
+          <span class="desc">Pararte en la rama principal</span>
+        </div>
+        <div class="cmd-row">
+          <code>git pull</code>
+          <span class="desc">Traer el cambio que ya se integró (por ej. el campo telefono)</span>
+        </div>
+        <div class="cmd-row">
+          <code>git checkout programador2-mostrar-telefono</code>
+          <span class="desc">Volver a tu rama</span>
+        </div>
+        <div class="cmd-row">
+          <code>git merge main</code>
+          <span class="desc">Traer ese cambio a tu rama antes de seguir, para evitar sorpresas</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tip danger">
+      <strong>Si aparece un conflicto</strong>
+      Git va a marcar el archivo afectado. Abrilo, dejá la versión final correcta
+      borrando las marcas <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> / <code>=======</code> / <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>,
+      después <code>git add archivo</code> y <code>git commit</code>. El detalle completo
+      está en la <a href="guia-github.html#conflictos">guía de Git y GitHub</a>.
+    </div>
+  </div>
+</section>
+
+<section id="unificar">
+  <div class="wrap">
+    <p class="eyebrow" style="color:var(--naranja);">Unificar el trabajo</p>
+    <h2 class="title">Cómo se combinan las dos ramas en <code style="font-family:'Consolas','SF Mono',monospace;background:var(--gris-claro);padding:0.1rem 0.4rem;border-radius:4px;">main</code></h2>
+    <p class="lead">Programador 1 y Programador 2 trabajaron en paralelo, en ramas
+       separadas, sobre archivos distintos. Unificar el trabajo es el proceso de
+       llevar los dos resultados a <code style="font-family:'Consolas','SF Mono',monospace;background:var(--gris-claro);padding:0.1rem 0.4rem;border-radius:4px;">main</code>
+       sin perder nada. Así se ve el recorrido completo:</p>
+
+    <div class="git-graph">
+      <svg viewBox="0 0 900 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagrama de ramas: main, Programador 1 y Programador 2 convergiendo en dos merges">
+        <text x="4" y="124" font-family="Consolas, monospace" font-size="13" font-weight="700" fill="#1e9e5a">main</text>
+        <text x="4" y="54" font-family="Consolas, monospace" font-size="12" font-weight="700" fill="#2f6feb">Programador 1</text>
+        <text x="4" y="194" font-family="Consolas, monospace" font-size="12" font-weight="700" fill="#7c4fd6">Programador 2</text>
+
+        <polyline points="110,120 890,120" fill="none" stroke="#1e9e5a" stroke-width="3"/>
+        <polyline points="130,120 170,50 340,50 480,120" fill="none" stroke="#2f6feb" stroke-width="3"/>
+        <polyline points="130,120 170,190 480,190 640,190 800,120" fill="none" stroke="#7c4fd6" stroke-width="3"/>
+        <line x1="480" y1="190" x2="480" y2="120" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4 3"/>
+
+        <circle cx="130" cy="120" r="6" fill="#1e9e5a" stroke="#fff" stroke-width="2"/>
+        <circle cx="255" cy="50" r="6" fill="#2f6feb" stroke="#fff" stroke-width="2"/>
+        <circle cx="480" cy="120" r="6" fill="#1e9e5a" stroke="#fff" stroke-width="2"/>
+        <circle cx="480" cy="190" r="5" fill="#7c4fd6" stroke="#fff" stroke-width="2"/>
+        <circle cx="560" cy="190" r="6" fill="#7c4fd6" stroke="#fff" stroke-width="2"/>
+        <circle cx="800" cy="120" r="6" fill="#1e9e5a" stroke="#fff" stroke-width="2"/>
+
+        <text x="130" y="145" font-family="Consolas, monospace" font-size="10" fill="#1e9e5a" text-anchor="middle">main (inicio)</text>
+        <text x="255" y="34" font-family="Consolas, monospace" font-size="10" fill="#2f6feb" text-anchor="middle">commit: campo teléfono</text>
+        <text x="480" y="145" font-family="Consolas, monospace" font-size="10" fill="#1e9e5a" text-anchor="middle">Merge PR #1</text>
+        <text x="480" y="209" font-family="Consolas, monospace" font-size="9" fill="#667085" text-anchor="middle">git merge main (sync)</text>
+        <text x="560" y="175" font-family="Consolas, monospace" font-size="10" fill="#7c4fd6" text-anchor="middle">commit: mostrar teléfono</text>
+        <text x="800" y="145" font-family="Consolas, monospace" font-size="10" fill="#1e9e5a" text-anchor="middle">Merge PR #2 (final)</text>
+      </svg>
+    </div>
+    <div class="graph-legend">
+      <span><span class="sw main"></span> main</span>
+      <span><span class="sw p1"></span> rama de Programador 1</span>
+      <span><span class="sw p2"></span> rama de Programador 2</span>
+    </div>
+
+    <p class="lead" style="margin-top:-0.75rem;">Diez pasos, en este orden. Cada
+       número es un commit real que va a quedar en el historial (o el merge que lo
+       integra):</p>
+
+    <div class="timeline">
+      <div class="tl-step">
+        <div class="num p1">1</div>
+        <h4>Programador 1 crea su rama <span class="quien p1">Programador 1</span></h4>
+        <p class="desc">Parte de <code style="font-family:'Consolas','SF Mono',monospace;background:var(--gris-claro);padding:0.1rem 0.4rem;border-radius:4px;">main</code> actualizado.</p>
+        <div class="code-file">
+          <div class="fname">terminal</div>
+          <pre><span class="line">git checkout main</span><span class="line">git pull</span><span class="line">git checkout -b programador1-telefono-alumno</span></pre>
+        </div>
+      </div>
+
+      <div class="tl-step">
+        <div class="num p2">2</div>
+        <h4>Programador 2 crea la suya, en paralelo <span class="quien p2">Programador 2</span></h4>
+        <p class="desc">No espera a que Programador 1 termine: arranca al mismo tiempo, desde el mismo punto de <code style="font-family:'Consolas','SF Mono',monospace;background:var(--gris-claro);padding:0.1rem 0.4rem;border-radius:4px;">main</code>.</p>
+        <div class="code-file">
+          <div class="fname">terminal</div>
+          <pre><span class="line">git checkout main</span><span class="line">git pull</span><span class="line">git checkout -b programador2-mostrar-telefono</span></pre>
+        </div>
+      </div>
+
+      <div class="tl-step">
+        <div class="num p1">3</div>
+        <h4>Commit 1: campo nuevo en el modelo y el formulario <span class="quien p1">Programador 1</span></h4>
+        <p class="desc">Edita <code>alumnos/models.py</code> y <code>alumnos/forms.py</code> como en la sección <a href="#programador1">Programador 1</a>, corre <code>makemigrations</code>/<code>migrate</code>, y guarda.</p>
+        <div class="code-file">
+          <div class="fname">terminal</div>
+          <pre><span class="line">git add alumnos/models.py alumnos/forms.py alumnos/migrations/</span><span class="line">git commit -m "Agregar campo telefono a Alumno"</span></pre>
+        </div>
+      </div>
+
+      <div class="tl-step">
+        <div class="num p1">4</div>
+        <h4>Sube la rama y abre el Pull Request #1 <span class="quien p1">Programador 1</span></h4>
+        <div class="code-file">
+          <div class="fname">terminal</div>
+          <pre><span class="line">git push -u origin programador1-telefono-alumno</span></pre>
+        </div>
+        <p class="desc">En github.com aparece el botón "Compare &amp; pull request". Programador 2 (u otro revisor) lo revisa y lo aprueba.</p>
+      </div>
+
+      <div class="tl-step">
+        <div class="num main">5</div>
+        <h4>Commit 2 (merge): Pull Request #1 entra a main <span class="quien main">Compartido</span></h4>
+        <p class="desc">Se hace con el botón "Merge pull request" en GitHub — ese click crea el commit de merge. Si prefieren hacerlo por consola en vez de la web, es lo mismo:</p>
+        <div class="code-file">
+          <div class="fname">terminal</div>
+          <pre><span class="line">git checkout main</span><span class="line">git merge programador1-telefono-alumno --no-ff -m "Merge pull request #1: Agregar campo telefono a Alumno"</span><span class="line">git push</span></pre>
+        </div>
+      </div>
+
+      <div class="tl-step">
+        <div class="num p2">6</div>
+        <h4>Commit 3 (merge): sincronizar con el cambio de backend <span class="quien p2">Programador 2</span></h4>
+        <p class="desc">Antes de seguir, Programador 2 trae el campo <code>telefono</code> a su propia rama. Si algo choca, el conflicto aparece acá — se resuelve como en la <a href="guia-github.html#conflictos">guía de conflictos</a>.</p>
+        <div class="code-file">
+          <div class="fname">terminal</div>
+          <pre><span class="line">git checkout main</span><span class="line">git pull</span><span class="line">git checkout programador2-mostrar-telefono</span><span class="line">git merge main -m "Merge branch 'main' into programador2-mostrar-telefono"</span></pre>
+        </div>
+      </div>
+
+      <div class="tl-step">
+        <div class="num p2">7</div>
+        <h4>Commit 4: mostrar el campo en el listado <span class="quien p2">Programador 2</span></h4>
+        <p class="desc">Edita <code>alumno_list.html</code> como en la sección <a href="#programador2">Programador 2</a>. Ahora sí, al probar en <code>runserver</code>, el teléfono ya tiene datos reales para mostrar.</p>
+        <div class="code-file">
+          <div class="fname">terminal</div>
+          <pre><span class="line">git add alumnos/templates/alumnos/alumno_list.html</span><span class="line">git commit -m "Mostrar telefono en el listado de alumnos"</span></pre>
+        </div>
+      </div>
+
+      <div class="tl-step">
+        <div class="num p2">8</div>
+        <h4>Sube la rama y abre el Pull Request #2 <span class="quien p2">Programador 2</span></h4>
+        <div class="code-file">
+          <div class="fname">terminal</div>
+          <pre><span class="line">git push -u origin programador2-mostrar-telefono</span></pre>
+        </div>
+      </div>
+
+      <div class="tl-step">
+        <div class="num main">9</div>
+        <h4>Commit 5 (merge): Pull Request #2 entra a main <span class="quien main">Compartido</span></h4>
+        <p class="desc">Mismo mecanismo que el paso 5: botón "Merge pull request" en GitHub, o por consola:</p>
+        <div class="code-file">
+          <div class="fname">terminal</div>
+          <pre><span class="line">git checkout main</span><span class="line">git merge programador2-mostrar-telefono --no-ff -m "Merge pull request #2: Mostrar telefono en el listado"</span><span class="line">git push</span></pre>
+        </div>
+      </div>
+
+      <div class="tl-step">
+        <div class="num main">10</div>
+        <h4>Ambos actualizan su copia local <span class="quien main">Compartido</span></h4>
+        <div class="code-file">
+          <div class="fname">terminal</div>
+          <pre><span class="line">git checkout main</span><span class="line">git pull</span></pre>
+        </div>
+        <p class="desc">Resultado: el modelo tiene el campo, el formulario lo pide y el listado lo muestra — el trabajo de los dos quedó unificado en un solo <code>main</code>, sin que nadie pisara el archivo del otro.</p>
+      </div>
+    </div>
+
+    <div class="tip verde" style="margin-top:1.75rem;">
+      <strong>Por qué no hubo conflictos "de verdad" en este ejemplo</strong>
+      Backend y frontend tocaron archivos distintos (<code>alumnos/models.py</code> /
+      <code>forms.py</code> por un lado, <code>alumno_list.html</code> por el otro). El único
+      punto donde podría haber fricción es el paso 6 (<code>git merge main</code>), y
+      solo pasa algo si los dos editaron la misma línea del mismo archivo. Repartir
+      bien las tareas antes de empezar es la mejor forma de evitar conflictos.
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Guía de comandos por nivel · Proyecto ABM de Alumnos · IES9007
+  </div>
+</footer>
+
+<script>
+  if (new URLSearchParams(location.search).get("pdf") === "1") {
+    window.addEventListener("load", function () {
+      setTimeout(function () { window.print(); }, 300);
+    });
+  }
+</script>
+
+</body>
+</html>
