@@ -5,6 +5,10 @@ class Curso(models.Model):
     nombre = models.CharField(max_length=100)
     turno = models.CharField(max_length=50)
 
+    class Meta:
+        ordering = ['nombre', 'turno']
+        unique_together = ('nombre', 'turno')
+
     def __str__(self):
         return f'{self.nombre} - {self.turno}'
 

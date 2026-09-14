@@ -1,6 +1,12 @@
 from django.contrib import admin
 
-from .models import Alumno
+from .models import Alumno, Curso
+
+
+@admin.register(Curso)
+class CursoAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'turno')
+    search_fields = ('nombre', 'turno')
 
 
 @admin.register(Alumno)
