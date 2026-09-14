@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}Cursos{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Cursos</h1>
+    <a class="btn" href="{% url 'alumnos:cursos_crear' %}">+ Nuevo curso</a>
+</div>
+
+<form method="get" class="search-form">
+    <input type="text" name="q" placeholder="Buscar por nombre" value="{{ request.GET.q }}">
+    <button type="submit" class="btn btn-secondary">Buscar</button>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Turno</th>
+            <th>Alumnos</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for curso in cursos %}
+        <tr>
+            <td>{{ curso.nombre }}</td>
+            <td>{{ curso.turno }}</td>
+            <td>{{ curso.alumnos.count }}</td>
+            <td class="actions">
+                <a href="{% url 'alumnos:cursos_editar' curso.pk %}">Editar</a>
+                <a href="{% url 'alumnos:cursos_eliminar' curso.pk %}" class="danger">Eliminar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">No hay cursos cargados todavía.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if is_paginated %}
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Anterior</a>
+    {% endif %}
+    <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Siguiente</a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}
