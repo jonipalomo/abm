@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Alumno
+from .models import Alumno, Curso
 
 
 class AlumnoForm(forms.ModelForm):
@@ -10,3 +10,9 @@ class AlumnoForm(forms.ModelForm):
         widgets = {
             'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}),
         }
+
+
+class CursoForm(forms.ModelForm):
+    class Meta:
+        model = Curso
+        fields = ['nombre', 'turno']

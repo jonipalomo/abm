@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Eliminar curso{% endblock %}
+
+{% block content %}
+<h1>Eliminar curso</h1>
+<p>¿Confirmás que querés eliminar <strong>{{ object }}</strong>?</p>
+{% if object.alumnos.count %}
+    <p class="message error">Este curso tiene {{ object.alumnos.count }} alumno(s) asignado(s) y no podrá eliminarse hasta reasignarlos.</p>
+{% endif %}
+
+<form method="post" class="form">
+    {% csrf_token %}
+    <div class="form-actions">
+        <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+        <a href="{% url 'alumnos:cursos_lista' %}" class="btn btn-secondary">Cancelar</a>
+    </div>
+</form>
+{% endblock %}
